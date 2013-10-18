@@ -13,12 +13,40 @@
         android:id="@+id/materials_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/materials_hint" />
+        android:hint="@string/materials_label"
+        android:textSize="35sp" />
     
     <EditText
         android:id="@+id/materials_editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/materials_hint"
-        android:clickable="true" />    
+        android:clickable="true" />
+        
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/location_label"
+        android:textSize="35sp" />
+    
+    <EditText
+        android:id="@+id/location_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/location_hint"
+        android:clickable="true" />   
+        
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_button_hint"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
 </LinearLayout>

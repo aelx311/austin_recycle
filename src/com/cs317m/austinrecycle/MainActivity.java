@@ -1,11 +1,14 @@
 package com.cs317m.austinrecycle;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.res.TypedArray;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -15,8 +18,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
+	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialList;
+	private ListView _listView;
+	private ArrayList<String> _materials;
+	private MaterialListAdapter _adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,25 +35,50 @@ public class MainActivity extends Activity {
 		_materialList.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				popMaterialDialog();
+				popChooseMaterialDialog();
 			}
 		});
 	}
 
-	private void popMaterialDialog() {
-		final AlertDialog.Builder materialBuilder = new AlertDialog.Builder(this);
-		materialBuilder.setTitle("Please select materials");
-		
+	private void popChooseMaterialDialog() {
+		Log.d(TAG, "in popChooseMaterialDialog");
+		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this);
+		materialDialogBuilder.setTitle("Please select materials");
 		LayoutInflater inflater = this.getLayoutInflater();
-		final View materialListItemLayout = inflater.inflate(R.layout.material_list_item, null);
-		materialBuilder.setView(materialListItemLayout);
+		final View popupLayout = inflater.inflate(R.layout.material_listview, null);
+		_listView = (ListView) popupLayout.findViewById(R.id.material_listview);
+		materialDialogBuilder.setView(popupLayout);
 		
-		final AlertDialog materialDialog = materialBuilder.create();
-		materialDialog.show();
+		// Dialog CANCEL button
+		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		
-		// create a list view
-		// create list to store materials
-		materialList = ()
+		// Dialog DONE button
+		materialDialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Send selected materials back to EditText
+				dialog.dismiss();
+			}
+		});
+		
+		// Read material name and icon
+		String[] rawData = this.getResources().getStringArray(R.array.list_material_name);
+		TypedArray icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
+		MaterialItem[] materialItem = new MaterialItem[rawData.length];
+		for(int i=0; i<rawData.length; ++i) {
+			materialItem[i] = new MaterialItem(icons.getResourceId(i, 0), rawData[i], false);
+		}
+		
+		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, materialItem);
+		_listView.setAdapter(_adapter);
+		
+		final AlertDialog materialListDialog = materialDialogBuilder.create();
+		materialListDialog.show();
 	}
 	
 	@Override
@@ -55,5 +87,4 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
 }

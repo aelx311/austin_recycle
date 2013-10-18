@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="list_material_name">
+        <item>@string/oil</item>
+        <item>@string/oil_filter</item>
+        <item>@string/fluids</item>
+        <item>@string/tires</item>
+        <item>@string/batteries</item>
+        <item>@string/newspapers</item>
+        <item>@string/scrap_metal</item>
+        <item>@string/aluminum</item>
+    </string-array>
+    
+    <string-array name="list_material_icon">
+       <item>@drawable/oil</item>
+        <item>@drawable/oil_filter</item>
+        <item>@drawable/fluids</item>
+        <item>@drawable/tires</item>
+        <item>@drawable/batteries</item>
+        <item>@drawable/newspapers</item>
+        <item>@drawable/scrap_metal</item>
+        <item>@drawable/aluminum</item>
+    </string-array>
+    
+</resources>

@@ -1,28 +1,24 @@
 package com.cs317m.austinrecycle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.res.TypedArray;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity.java";
 	
-	private EditText _materialList;
+	private EditText _materialEditText;
 	private ListView _listView;
-	private ArrayList<String> _materials;
 	private MaterialListAdapter _adapter;
 	
 	@Override
@@ -30,9 +26,8 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		_materialList = (EditText) this.findViewById(R.id.materials_editText);
-		_materialList.setInputType(DEFAULT_KEYS_DISABLE);
-		_materialList.setOnClickListener(new OnClickListener() {
+		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
+		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				popChooseMaterialDialog();
@@ -46,7 +41,7 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setTitle("Please select materials");
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_listview, null);
-		_listView = (ListView) popupLayout.findViewById(R.id.material_listview);
+		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
 		materialDialogBuilder.setView(popupLayout);
 		
 		// Dialog CANCEL button
@@ -73,7 +68,7 @@ public class MainActivity extends Activity {
 		for(int i=0; i<rawData.length; ++i) {
 			materialItem[i] = new MaterialItem(icons.getResourceId(i, 0), rawData[i], false);
 		}
-		
+		icons.recycle();
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, materialItem);
 		_listView.setAdapter(_adapter);
 		

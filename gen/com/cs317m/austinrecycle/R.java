@@ -183,7 +183,7 @@ public final class R {
         public static final int location_label=0x7f0a0002;
         public static final int material_checkbox=0x7f0a0007;
         public static final int material_icon=0x7f0a0005;
-        public static final int material_listview=0x7f0a0008;
+        public static final int material_listView=0x7f0a0008;
         public static final int material_name=0x7f0a0006;
         public static final int materials_editText=0x7f0a0001;
         public static final int materials_label=0x7f0a0000;

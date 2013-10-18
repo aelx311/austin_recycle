@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
@@ -8,18 +8,22 @@
         android:id="@+id/material_icon"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:contentDescription="Material icon goes here" />
-    
+        android:contentDescription="@string/none" />
+
     <TextView
         android:id="@+id/material_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:hint="Material name goes here" />
-    
+        android:layout_toLeftOf="@+id/material_checkbox"
+        android:layout_toRightOf="@id/material_icon"
+        android:hint="@string/materials_hint"
+        android:layout_marginLeft="5dp"
+        android:padding="3dp" />
+
     <CheckBox
         android:id="@+id/material_checkbox"
         android:layout_width="30dp"
-        android:layout_height="30dp" />
+        android:layout_height="30dp"
+        android:layout_alignParentRight="true" />
     
-</LinearLayout>
+</RelativeLayout>

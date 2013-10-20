@@ -1,5 +1,7 @@
 package com.cs317m.austinrecycle;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,12 +17,12 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	
 	private Context _context;
 	private int _layoutResourceId;
-	private MaterialItem[] _item = null;
+	private ArrayList<MaterialItem> _item = null;
 	private ImageView _icon;
 	private TextView _name;
 //	private CheckBox _checkbox;
 	
-	public MaterialListAdapter(Context context, int layoutResourceId, MaterialItem[] item) {
+	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> item) {
 		super(context, layoutResourceId, item);
 		_context = context;
 		_layoutResourceId = layoutResourceId;
@@ -38,7 +40,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		_name = (TextView) convertView.findViewById(R.id.material_name);
 //		_checkbox = (CheckBox) convertView.findViewById(R.id.material_checkbox);
 		
-		MaterialItem data = _item[position];
+		MaterialItem data = _item.get(position);
 		
 		_icon.setImageResource(data.getIcon());
 		Log.d(TAG, "icon: " + data.getIcon());

@@ -14,7 +14,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -32,17 +31,23 @@ public class MainActivity extends Activity {
 	private Button _searchButton;
 	private String[] _materialNames;
 	private TypedArray _icons;
-	private MaterialItem[] _materialItem;
+	private ArrayList<MaterialItem> _materialItem;
+	private ArrayList<FacilityItem> _facilitiesItem;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		_facilitiesItem = new ArrayList<FacilityItem>();
+		_materialItem = new ArrayList<MaterialItem>();
+		
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				_materialEditText.setText("");
+				_materialItem.clear();
 				popChooseMaterialDialog();
 			}
 		});
@@ -51,15 +56,20 @@ public class MainActivity extends Activity {
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				String selectedMaterial = _materialEditText.getText().toString();
+				// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
+				String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
+				Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
+				// Convert to String array to pass as parameter
 				String[] selectedMaterialArray = selectedMaterial.split(",");
-				new NetworkRequestTask().execute(selectedMaterialArray); 
+				new NetworkRequestTask().execute(selectedMaterialArray);
 			}
 		});
+		
 
 		/*
-		 * Location AutoComplete
+		 * Location AutoComplete using suggestions from Google Location API
 		 * TODO: Get API key
+		 * 
 		 */
 		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
@@ -72,9 +82,15 @@ public class MainActivity extends Activity {
 	}
 
 	private void popChooseMaterialDialog() {
-		Log.d(TAG, "in popChooseMaterialDialog");
+		Log.d(TAG, "entering popChooseMaterialDialog");
+		
+		// Create an Alert Dialog
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this);
+		
+		// Set title of Alert Dialog
 		materialDialogBuilder.setTitle("Please select materials");
+		
+		// Set the view of Alert Dialog to custom ListView
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
@@ -102,23 +118,32 @@ public class MainActivity extends Activity {
 		// Read material icon
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
 		
-		// Store into MaterialItem object
-		_materialItem = new MaterialItem[_materialNames.length];
+		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
-			_materialItem[i] = new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false);
+			_materialItem.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 		}
 		_icons.recycle();
 		
 		// Create instance of custom adapter
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItem);
+		
 		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
+	
 		// Set AdapterView listener
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				_materialEditText.setText(_materialNames[position]);
-				Log.d(TAG, "position: "+position);
+				_materialItem.remove(position);
+				_adapter.notifyDataSetChanged();
+				
+				// Get the string at the clicked position
+				String clickedMaterial = _materialNames[position];
+				String oldString = _materialEditText.getText().toString();
+				
+				// Format into comma separated string
+				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+				_materialEditText.setText(newString);
 			}
 		});
 		
@@ -143,23 +168,17 @@ public class MainActivity extends Activity {
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
-        protected ArrayList<FacilityItem> doInBackground(String... materials)
-        {
+        protected ArrayList<FacilityItem> doInBackground(String... materials) {
             Model m = new Model();
-            ArrayList<FacilityItem> facilities = m.getFacilities(materials);
-            return facilities;
+            return m.getFacilities(materials);
         }
         
         /** 
          * Invoked in asynchronously in MainActivity when the network 
          * request has finished and doInBackground returns its result.
          */
-        protected void onPostExecute(ArrayList<FacilityItem> facilities)
-        {
-        	for (FacilityItem facility : facilities)
-        	{
-        		Log.d(TAG, facility.getName());
-        	}
+        protected void onPostExecute(ArrayList<FacilityItem> facilities) {
+        	_facilitiesItem = facilities;
         }
     }
 }

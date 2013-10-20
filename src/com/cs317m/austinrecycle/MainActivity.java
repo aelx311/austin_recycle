@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
@@ -32,14 +35,12 @@ public class MainActivity extends Activity {
 	private String[] _materialNames;
 	private TypedArray _icons;
 	private ArrayList<MaterialItem> _materialItem;
-	private ArrayList<FacilityItem> _facilitiesItem;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		_facilitiesItem = new ArrayList<FacilityItem>();
 		_materialItem = new ArrayList<MaterialItem>();
 		
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
@@ -59,13 +60,15 @@ public class MainActivity extends Activity {
 				// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
 				String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
 				Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
+				
 				// Convert to String array to pass as parameter
 				String[] selectedMaterialArray = selectedMaterial.split(",");
+				
+				// Needs to create a new task every time
 				new NetworkRequestTask().execute(selectedMaterialArray);
 			}
 		});
 		
-
 		/*
 		 * Location AutoComplete using suggestions from Google Location API
 		 * TODO: Get API key
@@ -100,6 +103,7 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				_materialEditText.setText("");
 				dialog.dismiss();
 			}
 		});
@@ -178,7 +182,10 @@ public class MainActivity extends Activity {
          * request has finished and doInBackground returns its result.
          */
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
-        	_facilitiesItem = facilities;
+        	// Starting the ResultListActivity
+        	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
+        	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
+			MainActivity.this.startActivity(resultIntent);
         }
     }
 }

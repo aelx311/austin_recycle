@@ -178,7 +178,9 @@ public final class R {
         public static final int tires=0x7f020008;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0009;
+        public static final int action_settings=0x7f0a000c;
+        public static final int facility_address=0x7f0a000b;
+        public static final int facility_name=0x7f0a000a;
         public static final int location_autoCompleteTextView=0x7f0a0003;
         public static final int location_label=0x7f0a0002;
         public static final int material_checkbox=0x7f0a0007;
@@ -187,6 +189,7 @@ public final class R {
         public static final int material_name=0x7f0a0006;
         public static final int materials_editText=0x7f0a0001;
         public static final int materials_label=0x7f0a0000;
+        public static final int result_listView=0x7f0a0009;
         public static final int search_button=0x7f0a0004;
     }
     public static final class layout {
@@ -194,7 +197,8 @@ public final class R {
         public static final int location_list_item=0x7f030001;
         public static final int material_list_item=0x7f030002;
         public static final int material_list_view=0x7f030003;
-        public static final int material_listview=0x7f030004;
+        public static final int result_list_activity=0x7f030004;
+        public static final int result_list_item=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f090000;

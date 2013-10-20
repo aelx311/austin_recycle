@@ -51,10 +51,16 @@ public class MainActivity extends Activity {
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new NetworkRequestTask().execute("batteries");
-                        }
-                });
+				String selectedMaterial = _materialEditText.getText().toString();
+				String[] selectedMaterialArray = selectedMaterial.split(",");
+				new NetworkRequestTask().execute(selectedMaterialArray); 
+			}
+		});
 
+		/*
+		 * Location AutoComplete
+		 * TODO: Get API key
+		 */
 		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
 		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -86,30 +92,35 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Send selected materials back to EditText
-				AdapterView.OnItemClickListener listListener = new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-						String clickedMaterial = _materialNames[position];
-						_materialEditText.setText(clickedMaterial);
-						Log.d(TAG, "position: "+position);
-					}
-				};
-				_listView.setOnItemClickListener(listListener);
 				dialog.dismiss();
 			}
 		});
 		
-		// Read material name and icon
+		// Read material name
 		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
+		
+		// Read material icon
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
+		
+		// Store into MaterialItem object
 		_materialItem = new MaterialItem[_materialNames.length];
 		for(int i=0; i<_materialNames.length; ++i) {
 			_materialItem[i] = new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false);
 		}
 		_icons.recycle();
+		
+		// Create instance of custom adapter
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItem);
+		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
+		// Set AdapterView listener
+		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				_materialEditText.setText(_materialNames[position]);
+				Log.d(TAG, "position: "+position);
+			}
+		});
 		
 		// Display dialog
 		final AlertDialog materialListDialog = materialDialogBuilder.create();

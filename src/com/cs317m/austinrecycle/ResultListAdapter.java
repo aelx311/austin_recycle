@@ -2,6 +2,7 @@ package com.cs317m.austinrecycle;
 
 import java.util.ArrayList;
 
+import android.R.color;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,8 +46,14 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		_facility_address = (TextView) convertView.findViewById(R.id.facility_address);
 		
 		FacilityItem data = _item.get(position);
-		Log.d(TAG, data.getName());
-		Log.d(TAG, data.getAddrHuman());
+		
+		// Set alternating background color
+		if(position%2 == 0) {
+			convertView.setBackgroundColor(android.graphics.Color.LTGRAY);
+		}
+		else {
+			convertView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+		}
 		_facility_name.setText(data.getName());
 		_facility_address.setText(data.getAddrHuman());
 		

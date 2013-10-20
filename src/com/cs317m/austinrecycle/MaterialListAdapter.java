@@ -18,7 +18,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	private MaterialItem[] _item = null;
 	private ImageView _icon;
 	private TextView _name;
-	private CheckBox _checkbox;
+//	private CheckBox _checkbox;
 	
 	public MaterialListAdapter(Context context, int layoutResourceId, MaterialItem[] item) {
 		super(context, layoutResourceId, item);
@@ -36,7 +36,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		}
 		_icon = (ImageView) convertView.findViewById(R.id.material_icon);
 		_name = (TextView) convertView.findViewById(R.id.material_name);
-		_checkbox = (CheckBox) convertView.findViewById(R.id.material_checkbox);
+//		_checkbox = (CheckBox) convertView.findViewById(R.id.material_checkbox);
 		
 		MaterialItem data = _item[position];
 		
@@ -44,8 +44,8 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		Log.d(TAG, "icon: " + data.getIcon());
 		_name.setText(data.getName());
 		Log.d(TAG, "name: " + data.getName());
-		_checkbox.setChecked(data.getChecked());
-		Log.d(TAG, "checked: " + data.getChecked());
+//		_checkbox.setChecked(data.getChecked());
+//		Log.d(TAG, "checked: " + data.getChecked());
 		
 		return convertView;
 	}

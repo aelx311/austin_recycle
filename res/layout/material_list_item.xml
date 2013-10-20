@@ -20,10 +20,12 @@
         android:layout_marginLeft="5dp"
         android:padding="3dp" />
 
+
+    <!-- 
     <CheckBox
         android:id="@+id/material_checkbox"
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_alignParentRight="true" />
-    
+ -->
 </RelativeLayout>

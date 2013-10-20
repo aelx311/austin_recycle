@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,7 +57,7 @@ public class Model {
      * Forms the appropriate URL based on the given materials list, makes the
      * request, and returns the response.
      */
-    public String getFacilities(String[] materials)
+    public ArrayList<FacilityItem> getFacilities(String[] materials)
     {
         Log.d(TAG, "entering getFacilities()");
         // Create HTTP Request URL from materials
@@ -70,24 +71,25 @@ public class Model {
         String response = getResponse(url_string);
         
         // Parse the JSON String response into a JSONArray of JSONObjects
+        ArrayList<FacilityItem> facilities = new ArrayList<FacilityItem>();
         try 
         {
             JSONArray resp_array = new JSONArray(response);
             for(int i = 0; i < resp_array.length(); ++i)
             {
                 JSONObject obj_i = resp_array.getJSONObject(i);
-                String facility_name = obj_i.getString("business_name");
-                String facility_zone = obj_i.getString("zone");
-                String facility_zip = obj_i.getString("zip_code");
+                String name = obj_i.getString("business_name");
+                String phone_num = obj_i.getString("phone");
                 
                 String addr_obj_string = obj_i.getString("address");
                 JSONObject addr_obj = new JSONObject(addr_obj_string);
-                String latitude = addr_obj.getString("latitude");
+                String addr_lat = addr_obj.getString("latitude");
+                String addr_long = addr_obj.getString("longitude");
+                String addr_human = addr_obj.getString("human_address");
                 
-                Log.v(TAG, facility_name + " is in zone \"" + facility_zone + 
-                      "\" at zipcode " + facility_zip + " and latitude " + latitude);
-                // TODO: Determine where to parse + sort this array. If we do it
-                // here then getFacilities should return the JSONArray, not String.
+                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num);
+                facilities.add(facility_i);
+                // TODO: Sort
             }
         }
         catch (JSONException e)
@@ -95,7 +97,7 @@ public class Model {
             Log.e(TAG, e.toString());
         }
 
-        return response;
+        return facilities;
     }
     
     /**

@@ -1,5 +1,7 @@
 package com.cs317m.austinrecycle;
 
+import java.util.ArrayList;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -128,23 +130,25 @@ public class MainActivity extends Activity {
      * @param  A String array of materials for the request
      * @return JSON string
      */
-    private class NetworkRequestTask extends AsyncTask<String, Integer, String>
+    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
-        protected String doInBackground(String... materials)
+        protected ArrayList<FacilityItem> doInBackground(String... materials)
         {
             Model m = new Model();
-            String response = m.getFacilities(materials);
-            return response;
+            ArrayList<FacilityItem> facilities = m.getFacilities(materials);
+            return facilities;
         }
         
         /** 
          * Invoked in asynchronously in MainActivity when the network 
          * request has finished and doInBackground returns its result.
-         * TODO: Determine if this is the right scope to declare this
          */
-        protected void onPostExecute(String result)
+        protected void onPostExecute(ArrayList<FacilityItem> facilities)
         {
-            Log.d(TAG, result);
+        	for (FacilityItem facility : facilities)
+        	{
+        		Log.d(TAG, facility.getName());
+        	}
         }
     }
 }

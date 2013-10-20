@@ -1,5 +1,6 @@
 package com.cs317m.austinrecycle;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -19,6 +21,8 @@ public class MainActivity extends Activity {
 	private EditText _materialEditText;
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
+
+	private Button _searchButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,14 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				popChooseMaterialDialog();
+			}
+		});
+		
+		_searchButton = (Button) this.findViewById(R.id.search_button);
+		_searchButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				new NetworkRequestTask().execute("batteries");
 			}
 		});
 	}
@@ -81,4 +93,31 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+    /**
+     * Class to run HTTP network requests in a worker thread. Necessary to
+     * keep the UI interactive.
+     * 
+     * @param  A String array of materials for the request
+     * @return JSON string
+     */
+    private class NetworkRequestTask extends AsyncTask<String, Integer, String>
+    {
+        protected String doInBackground(String... materials)
+        {
+            Model m = new Model();
+            String response = m.getFacilities(materials);
+            return response;
+        }
+        
+        /** 
+         * Invoked in asynchronously in MainActivity when the network 
+         * request has finished and doInBackground returns its result.
+         * TODO: Determine if this is the right scope to declare this
+         */
+        protected void onPostExecute(String result)
+        {
+            Log.d(TAG, result);
+        }
+    }
 }

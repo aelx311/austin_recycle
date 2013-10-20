@@ -179,7 +179,7 @@ public final class R {
     }
     public static final class id {
         public static final int action_settings=0x7f0a0009;
-        public static final int location_editText=0x7f0a0003;
+        public static final int location_autoCompleteTextView=0x7f0a0003;
         public static final int location_label=0x7f0a0002;
         public static final int material_checkbox=0x7f0a0007;
         public static final int material_icon=0x7f0a0005;
@@ -191,8 +191,9 @@ public final class R {
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int material_list_item=0x7f030001;
-        public static final int material_listview=0x7f030002;
+        public static final int location_list_item=0x7f030001;
+        public static final int material_list_item=0x7f030002;
+        public static final int material_list_view=0x7f030003;
     }
     public static final class menu {
         public static final int main=0x7f090000;

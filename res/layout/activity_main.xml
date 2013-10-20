@@ -32,8 +32,8 @@
         android:hint="@string/location_label"
         android:textSize="35sp" />
     
-    <EditText
-        android:id="@+id/location_editText"
+    <AutoCompleteTextView
+        android:id="@+id/location_autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/location_hint"

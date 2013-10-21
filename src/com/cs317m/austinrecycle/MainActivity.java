@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +16,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.view.View.OnKeyListener;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
@@ -32,17 +34,21 @@ public class MainActivity extends Activity {
 	private Button _searchButton;
 	private String[] _materialNames;
 	private TypedArray _icons;
-	private MaterialItem[] _materialItem;
+	private ArrayList<MaterialItem> _materialItem;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
+		_materialItem = new ArrayList<MaterialItem>();
+		
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				_materialEditText.setText("");
+				_materialItem.clear();
 				popChooseMaterialDialog();
 			}
 		});
@@ -51,10 +57,23 @@ public class MainActivity extends Activity {
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new NetworkRequestTask().execute("batteries");
-                        }
-                });
-
+				// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
+				String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
+				Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
+				
+				// Convert to String array to pass as parameter
+				String[] selectedMaterialArray = selectedMaterial.split(",");
+				
+				// Needs to create a new task every time
+				new NetworkRequestTask().execute(selectedMaterialArray);
+			}
+		});
+		
+		/*
+		 * Location AutoComplete using suggestions from Google Location API
+		 * TODO: Get API key
+		 * 
+		 */
 		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
 		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,9 +85,15 @@ public class MainActivity extends Activity {
 	}
 
 	private void popChooseMaterialDialog() {
-		Log.d(TAG, "in popChooseMaterialDialog");
+		Log.d(TAG, "entering popChooseMaterialDialog");
+		
+		// Create an Alert Dialog
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this);
+		
+		// Set title of Alert Dialog
 		materialDialogBuilder.setTitle("Please select materials");
+		
+		// Set the view of Alert Dialog to custom ListView
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
@@ -78,6 +103,7 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				_materialEditText.setText("");
 				dialog.dismiss();
 			}
 		});
@@ -86,30 +112,44 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Send selected materials back to EditText
-				AdapterView.OnItemClickListener listListener = new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-						String clickedMaterial = _materialNames[position];
-						_materialEditText.setText(clickedMaterial);
-						Log.d(TAG, "position: "+position);
-					}
-				};
-				_listView.setOnItemClickListener(listListener);
 				dialog.dismiss();
 			}
 		});
 		
-		// Read material name and icon
+		// Read material name
 		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
+		
+		// Read material icon
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
-		_materialItem = new MaterialItem[_materialNames.length];
+		
+		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
-			_materialItem[i] = new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false);
+			_materialItem.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 		}
 		_icons.recycle();
+		
+		// Create instance of custom adapter
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItem);
+		
+		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
+	
+		// Set AdapterView listener
+		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				_materialItem.remove(position);
+				_adapter.notifyDataSetChanged();
+				
+				// Get the string at the clicked position
+				String clickedMaterial = _materialNames[position];
+				String oldString = _materialEditText.getText().toString();
+				
+				// Format into comma separated string
+				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+				_materialEditText.setText(newString);
+			}
+		});
 		
 		// Display dialog
 		final AlertDialog materialListDialog = materialDialogBuilder.create();
@@ -132,23 +172,20 @@ public class MainActivity extends Activity {
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
-        protected ArrayList<FacilityItem> doInBackground(String... materials)
-        {
+        protected ArrayList<FacilityItem> doInBackground(String... materials) {
             Model m = new Model();
-            ArrayList<FacilityItem> facilities = m.getFacilities(materials);
-            return facilities;
+            return m.getFacilities(materials);
         }
         
         /** 
          * Invoked in asynchronously in MainActivity when the network 
          * request has finished and doInBackground returns its result.
          */
-        protected void onPostExecute(ArrayList<FacilityItem> facilities)
-        {
-        	for (FacilityItem facility : facilities)
-        	{
-        		Log.d(TAG, facility.getName());
-        	}
+        protected void onPostExecute(ArrayList<FacilityItem> facilities) {
+        	// Starting the ResultListActivity
+        	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
+        	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
+			MainActivity.this.startActivity(resultIntent);
         }
     }
 }

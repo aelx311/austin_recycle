@@ -3,7 +3,9 @@ package com.cs317m.austinrecycle;
 import java.util.ArrayList;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,6 +34,10 @@ public class ResultListActivity extends ListActivity {
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				Intent showFacilityDetails = new Intent(ResultListActivity.this, FacilityDetailsActivity.class);
+				showFacilityDetails.putParcelableArrayListExtra("SELECTED_FACILITY", (ArrayList<? extends Parcelable>) _facilityItem);
+				showFacilityDetails.putExtra("SELECTED_POSITION", position);
+				ResultListActivity.this.startActivity(showFacilityDetails);
 				Log.d(TAG, "Clicked position: " + position);
 			}
 		});

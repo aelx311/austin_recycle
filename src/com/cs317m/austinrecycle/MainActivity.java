@@ -15,14 +15,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+//import android.widget.AdapterView.OnItemClickListener;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements OnItemClickListener{
 
 	private static final String TAG = "MainActivity.java";
 	
@@ -69,6 +71,10 @@ public class MainActivity extends Activity {
 			}
 		});
 		
+
+//	    AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autocomplete);
+//	    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_item));
+		
 		/*
 		 * Location AutoComplete using suggestions from Google Location API
 		 * TODO: Get API key
@@ -76,12 +82,19 @@ public class MainActivity extends Activity {
 		 */
 		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
-		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				Log.d(TAG, _locationAutoCompleteTextViewt.getText().toString());
-			}
-		});
+		_locationAutoCompleteTextViewt.setOnItemClickListener(this);
+		
+//		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+//				Log.d(TAG, _locationAutoCompleteTextViewt.getText().toString());
+//			}
+//		});
+	}
+	
+	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+		String str = (String) adapterView.getItemAtPosition(position);
+		Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
 	}
 
 	private void popChooseMaterialDialog() {

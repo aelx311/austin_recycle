@@ -24,7 +24,8 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
     private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
     private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
     private static final String OUT_JSON = "/json";
-    private static final String API_KEY = "AIzaSyAnSIoxMuF1GLDMgVMTWctnuVQACtR-A_8";
+    private static final String API_KEY = "AIzaSyCnLUmKZNvy5P7R2p1RJw2fd4VGNRbcJBU";
+    
     
     public LocationAutoCompleteAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -81,7 +82,7 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
             sb.append("?sensor=false&key=" + API_KEY);
-            sb.append("&components=country:uk");
+            sb.append("&components=country:us");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
             
             URL url = new URL(sb.toString());
@@ -94,6 +95,7 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             while ((read = in.read(buff)) != -1) {
                 jsonResults.append(buff, 0, read);
             }
+            Log.d(TAG, jsonResults.toString());
         }
         catch (MalformedURLException e) {
             Log.e(TAG, "Error processing Places API URL", e);
@@ -118,13 +120,14 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             resultList = new ArrayList<String>(predsJsonArray.length());
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+//                Log.d(TAG, resultList.toString());
             }
         } catch (JSONException e) {
             Log.e(TAG, "Cannot process JSON results", e);
         }
         
     	Log.d(TAG, "END autoComplete()");
-
+    	Log.d(TAG, resultList.toString());
         return resultList;
     }
 }

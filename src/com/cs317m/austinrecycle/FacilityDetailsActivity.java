@@ -49,7 +49,7 @@ public class FacilityDetailsActivity extends Activity {
 			}
 		});
 		
-		final Uri direction = Uri.parse("geo:"+_data.getAddrLat() +","+ _data.getAddrLong() + "?z=19");
+		final Uri direction = Uri.parse("geo:"+_data.getAddrLat() +","+ _data.getAddrLong() + "?z=17");
 		_directionButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

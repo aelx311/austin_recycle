@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     
+    <!-- GOOGLE MAP VIEW OF THE LOCATION -->
+    
     <Button
         android:id="@+id/dial_button"
         android:layout_width="match_parent"

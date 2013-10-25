@@ -2,7 +2,7 @@
 <resources>
 
     <string name="none"></string>
-    <string name="app_name">AustinRecycle</string>
+    <string name="app_name">Austin Recycle Drop Off</string>
     <string name="action_settings">Settings</string>
     <string name="materials_label">Materials</string>
      <string name="location_label">Location</string>

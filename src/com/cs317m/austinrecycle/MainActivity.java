@@ -180,8 +180,7 @@ public class MainActivity extends Activity implements OnItemClickListener{
      * Class to run HTTP network requests in a worker thread. Necessary to
      * keep the UI interactive.
      * 
-     * @param  A String array of materials for the request
-     * @return JSON string
+     * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
@@ -191,8 +190,8 @@ public class MainActivity extends Activity implements OnItemClickListener{
         }
         
         /** 
-         * Invoked in asynchronously in MainActivity when the network 
-         * request has finished and doInBackground returns its result.
+         * Invoked in asynchronously in MainActivity when the network request 
+         * has finished and doInBackground returns its result.
          */
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
         	// Starting the ResultListActivity

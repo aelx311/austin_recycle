@@ -2,7 +2,11 @@ package com.cs317m.austinrecycle;
 
 import java.util.ArrayList;
 
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
+
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,23 +16,42 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class FacilityDetailsActivity extends Activity {
 
+public class FacilityDetailsActivity extends Activity {
 	private static final String TAG = "FacilityDetailsActivity.java";
+	
 	private ArrayList<FacilityItem> _facilityItem;
 	private FacilityItem _data;
 	private int _position;
+	private double _facility_lat;
+	private double _facility_long;
+	private LatLng _facility_location;
 	private Button _dialButton;
 	private Button _directionButton;
 	private TextView _facilityName;
+	private GoogleMap _mapView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.facility_details_activity);
+		 
 		_facilityItem = this.getIntent().getParcelableArrayListExtra("SELECTED_FACILITY");
 		_position = this.getIntent().getIntExtra("SELECTED_POSITION", -1);
 		_data = _facilityItem.get(_position);
+		
+		_mapView = ((MapFragment) this.getFragmentManager().findFragmentById(R.id.map)).getMap();
+		
+		_facility_lat = Double.valueOf(_data.getAddrLat());
+		_facility_long = Double.valueOf(_data.getAddrLong());
+		_facility_location = new LatLng(_facility_lat, _facility_long);
+
+		_mapView.setMyLocationEnabled(true);
+		_mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 17));
+		_mapView.addMarker(new MarkerOptions()
+                .title(_data.getName())
+//                .snippet("The most populous city in Australia.")
+                .position(_facility_location));
 		
 		Log.d(TAG, "_facilityItem: " + _facilityItem.size());
 		Log.d(TAG, "_position: " + _position);

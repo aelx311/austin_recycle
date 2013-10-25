@@ -37,6 +37,8 @@ public class FacilityDetailsActivity extends Activity {
 		_directionButton = (Button) this.findViewById(R.id.direction_button);
 		_facilityName = (TextView) this.findViewById(R.id.facility_name);
 		
+		_directionButton.setText("Get direction");
+		
 		_dialButton.setText("Call: " + _data.getPhoneNum());
 		_facilityName.setText(_data.getName());
 		

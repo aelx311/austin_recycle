@@ -53,9 +53,9 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		else {
 			convertView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
 		}
+		
 		_facility_name.setText((position+1) + ". " + data.getName());
 		_facility_address.setText(data.getAddrHuman());
-		
 		return convertView;
 	}
 }

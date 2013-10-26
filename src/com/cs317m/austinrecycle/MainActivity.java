@@ -49,7 +49,7 @@ public class MainActivity extends Activity {
 		
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this);
-		
+
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
@@ -66,6 +66,9 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				if(_materialEditText.getText().toString().equals("")) {
 					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
+				}
+				else if(_locationAutoCompleteTextView.getText().toString().equals("")) {
+					Toast.makeText(MainActivity.this, "Please enter a location", Toast.LENGTH_SHORT).show();
 				}
 				else {
 					// Get the latitude and longitude of current location
@@ -143,14 +146,14 @@ public class MainActivity extends Activity {
 		// Read material names and icons from arrays.xml
 		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
-		
+
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
 			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 		}
 		_icons.recycle();
 		
-		// Set custom AdapterView listener
+		// Setup custom adapter
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
 		_listView.setAdapter(_adapter);
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

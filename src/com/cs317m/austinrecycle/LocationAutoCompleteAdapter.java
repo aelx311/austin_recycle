@@ -51,7 +51,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
                 if (constraint != null) {
                     // Retrieve the autocomplete results.
                     resultList = autocomplete(constraint.toString());
-                	Log.d(TAG, "resultList: " + constraint.toString());
                     
                     // Assign the data to the FilterResults
                     filterResults.values = resultList;
@@ -97,7 +96,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             while ((read = in.read(buff)) != -1) {
                 jsonResults.append(buff, 0, read);
             }
-            Log.d(TAG, jsonResults.toString());
         }
         catch (MalformedURLException e) {
             Log.e(TAG, "Error processing Places API URL", e);

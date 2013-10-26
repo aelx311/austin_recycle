@@ -8,19 +8,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	private static final String TAG = "MaterialListAdapter.java";
 	
-	private Context _context;
-	private int _layoutResourceId;
-	private ArrayList<MaterialItem> _itemArray = null;
-	private ImageView _icon;
-	private TextView _name;
-//	private CheckBox _checkbox;
+	private final Context _context;
+	private final int _layoutResourceId;
+	private ArrayList<MaterialItem> _itemArray;
+	private MaterialItem _data;
+	
+	static class ViewHolder {
+		public ImageView _icon;
+		public TextView _name;
+	}
 	
 	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> itemArray) {
 		super(context, layoutResourceId, itemArray);
@@ -32,23 +34,24 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Log.d(TAG, "in MaterialListAdapter getView");
-		if(convertView == null) {
+		View rowView = convertView;
+		if(rowView == null) {
 			LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = inflater.inflate(_layoutResourceId, parent, false);
+			rowView = inflater.inflate(_layoutResourceId, parent, false);
+			
+			ViewHolder viewHolder = new ViewHolder();
+			viewHolder._icon = (ImageView) rowView.findViewById(R.id.material_icon);
+			viewHolder._name = (TextView) rowView.findViewById(R.id.material_name);
+			rowView.setTag(viewHolder);
 		}
-		_icon = (ImageView) convertView.findViewById(R.id.material_icon);
-		_name = (TextView) convertView.findViewById(R.id.material_name);
-//		_checkbox = (CheckBox) convertView.findViewById(R.id.material_checkbox);
 		
-		MaterialItem data = _itemArray.get(position);
+		ViewHolder holder = (ViewHolder) rowView.getTag();
+		_data = _itemArray.get(position);
+		holder._icon.setImageResource(_data.getIcon());
+		Log.d(TAG, "icon: " + _data.getIcon());
+		holder._name.setText(_data.getName());
+		Log.d(TAG, "name: " + _data.getName());
 		
-		_icon.setImageResource(data.getIcon());
-		Log.d(TAG, "icon: " + data.getIcon());
-		_name.setText(data.getName());
-		Log.d(TAG, "name: " + data.getName());
-//		_checkbox.setChecked(data.getChecked());
-//		Log.d(TAG, "checked: " + data.getChecked());
-		
-		return convertView;
+		return rowView;
 	}
 }

@@ -28,11 +28,11 @@ public class ResultListActivity extends ListActivity {
 		_current_long = this.getIntent().getDoubleExtra("CURRENT_LONG", 0);
 		
 		// Make sure the object is passed correctly
-		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
-    	for(FacilityItem x : _facilityItem) {
-    		Log.d(TAG, x.getName());
-    	}
-    	Log.d(TAG, "END PRINTING _facilitiesItem");
+//		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
+//    	for(FacilityItem x : _facilityItem) {
+//    		Log.d(TAG, x.getName());
+//    	}
+//    	Log.d(TAG, "END PRINTING _facilitiesItem");
     	
 		_listView.setAdapter(new ResultListAdapter(this, R.layout.result_list_item, _facilityItem));
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

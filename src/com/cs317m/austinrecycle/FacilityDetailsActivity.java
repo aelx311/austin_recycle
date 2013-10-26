@@ -65,8 +65,6 @@ public class FacilityDetailsActivity extends Activity {
 		_directionButton = (Button) this.findViewById(R.id.direction_button);
 		_facilityName = (TextView) this.findViewById(R.id.facility_name);
 		
-		_directionButton.setText("Get direction");
-		
 		_dialButton.setText("Call: " + _data.getPhoneNum());
 		_facilityName.setText(_data.getName());
 		
@@ -89,6 +87,7 @@ public class FacilityDetailsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent googleMaps = new Intent(android.content.Intent.ACTION_VIEW, direction);
+				googleMaps.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
 				FacilityDetailsActivity.this.startActivity(googleMaps);
 			}
 		});

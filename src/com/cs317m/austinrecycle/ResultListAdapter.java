@@ -27,11 +27,11 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		
 		Log.d(TAG, "_item size: " + _item.size());
 		// Make sure the object is passed correctly
-		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
-    	for(FacilityItem x : _item) {
-    		Log.d(TAG, x.getName());
-    	}
-    	Log.d(TAG, "END PRINTING _facilitiesItem");
+//		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
+//    	for(FacilityItem x : _item) {
+//    		Log.d(TAG, x.getName());
+//    	}
+//    	Log.d(TAG, "END PRINTING _facilitiesItem");
 	}
 	
 	@Override

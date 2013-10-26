@@ -17,5 +17,6 @@
     <string name="scrap_metal">Scrap Metal</string>
     <string name="aluminum">Aluminum</string>
     <string name="search_button_hint">Go</string>
+    <string name="get_direction">Get direction</string>
 
 </resources>

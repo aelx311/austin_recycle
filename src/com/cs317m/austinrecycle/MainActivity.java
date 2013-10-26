@@ -1,7 +1,11 @@
 package com.cs317m.austinrecycle;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -34,6 +38,9 @@ public class MainActivity extends Activity {
 	private String[] _materialNames;
 	private TypedArray _icons;
 	private ArrayList<MaterialItem> _materialItemArray;
+	private Geocoder _geocoder;
+	private double _current_lat;
+	private double _current_long;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +48,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		
 		_materialItemArray = new ArrayList<MaterialItem>();
+		_geocoder = new Geocoder(this);
 		
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
@@ -51,18 +59,28 @@ public class MainActivity extends Activity {
 				popChooseMaterialDialog();
 			}
 		});
-		
+		 
 		_searchButton = (Button) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				if(_materialEditText.getText().toString().equals("")) {
-					Toast.makeText(MainActivity.this, "Please select at least one material", Toast.LENGTH_SHORT).show();
+					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
 				}
 				else {
+					// Get the latitude and longitude of current location
+					try {
+						String currentAddress = _locationAutoCompleteTextView.getText().toString();
+						List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
+						_current_lat = returnedAddress.get(0).getLatitude();
+						_current_long = returnedAddress.get(0).getLongitude();
+					}
+					catch(IOException e) {
+						Log.e(TAG, "Error occured in Geocoder: ", e);
+					}
+					
 					// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
 					String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
-					Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
 					
 					// Convert to String array to pass as parameter
 					String[] selectedMaterialArray = selectedMaterial.split(",");
@@ -122,10 +140,8 @@ public class MainActivity extends Activity {
 			}
 		});
 		
-		// Read material name
+		// Read material names and icons from arrays.xml
 		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
-		
-		// Read material icon
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
 		
 		// Store MaterialItem into ArrayList
@@ -134,13 +150,9 @@ public class MainActivity extends Activity {
 		}
 		_icons.recycle();
 		
-		// Create instance of custom adapter
+		// Set custom AdapterView listener
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
-		
-		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
-	
-		// Set AdapterView listener
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -180,9 +192,7 @@ public class MainActivity extends Activity {
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
-        	// TODO: Currently passing in a hardcoded user location
-        	//       This needs to be dynamically populated based on user input
-            Model m = new Model(30.26032043200047, -97.71022065999966);
+            Model m = new Model(_current_lat, _current_long);
             return m.getFacilities(materials);
         }
         
@@ -194,6 +204,8 @@ public class MainActivity extends Activity {
         	// Starting the ResultListActivity
         	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
+        	resultIntent.putExtra("CURRENT_LAT", _current_lat);
+        	resultIntent.putExtra("CURRENT_LONG", _current_long);
 			MainActivity.this.startActivity(resultIntent);
         }
     }

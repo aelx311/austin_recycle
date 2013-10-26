@@ -128,7 +128,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
         }
         
     	Log.d(TAG, "leaving autoComplete()");
-    	Log.d(TAG, resultList.toString());
         return resultList;
     }
 }

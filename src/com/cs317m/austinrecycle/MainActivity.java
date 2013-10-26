@@ -22,18 +22,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-//import android.widget.AdapterView.OnItemClickListener;
 
-public class MainActivity extends Activity implements OnItemClickListener{
+public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
+	private Button _searchButton;
 	private AutoCompleteTextView _locationAutoCompleteTextViewt;
+	
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
-
-	private Button _searchButton;
 	private String[] _materialNames;
 	private TypedArray _icons;
 	private ArrayList<MaterialItem> _materialItemArray;
@@ -59,44 +58,39 @@ public class MainActivity extends Activity implements OnItemClickListener{
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
-				String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
-				Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
-				
-				// Convert to String array to pass as parameter
-				String[] selectedMaterialArray = selectedMaterial.split(",");
-				
-				// Needs to create a new task every time
-				new NetworkRequestTask().execute(selectedMaterialArray);
+				if(_materialEditText.getText().toString().equals("")) {
+					Toast.makeText(MainActivity.this, "Please select at least one material", Toast.LENGTH_SHORT).show();
+				}
+				else {
+					// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
+					String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
+					Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
+					
+					// Convert to String array to pass as parameter
+					String[] selectedMaterialArray = selectedMaterial.split(",");
+					
+					// Needs to create a new task every time
+					new NetworkRequestTask().execute(selectedMaterialArray);	
+				}
 			}
 		});
 		
-
-//	    AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autocomplete);
-//	    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_item));
-		
-		/*
-		 * Location AutoComplete using suggestions from Google Location API
-		 * TODO: Get API key
-		 * 
-		 */
+		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
-		_locationAutoCompleteTextViewt.setOnItemClickListener(this);
-		
-//		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//				Log.d(TAG, _locationAutoCompleteTextViewt.getText().toString());
-//			}
-//		});
+		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+				String str = (String) adapterView.getItemAtPosition(position);
+				Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
+			}
+		});
 	}
 	
-	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-		String str = (String) adapterView.getItemAtPosition(position);
-		Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
-	}
-
+	/*
+	 * Display list of materials
+	 * Selected materials will be removed from the list
+	 */
 	private void popChooseMaterialDialog() {
 		Log.d(TAG, "entering popChooseMaterialDialog");
 		

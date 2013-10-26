@@ -31,7 +31,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Log.d(TAG, "in getView");
+		Log.d(TAG, "in MaterialListAdapter getView");
 		if(convertView == null) {
 			LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(_layoutResourceId, parent, false);

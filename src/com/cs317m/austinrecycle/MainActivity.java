@@ -151,12 +151,14 @@ public class MainActivity extends Activity implements OnItemClickListener{
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				_materialItemArray.remove(position);
-				_adapter.notifyDataSetChanged();
-				
-				// Get the string at the clicked position
-				String clickedMaterial = _materialNames[position];
+				// Grab the clicked item's name before removing the item from
+				String clickedMaterial = _materialItemArray.get(position).getName();
 				String oldString = _materialEditText.getText().toString();
+				
+				// Remove clicked item from the adapter's data array and update
+				// => It gets removed from the dialog
+				_materialItemArray.remove(position);
+				_adapter.notifyDataSetChanged();		
 				
 				// Format into comma separated string
 				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;

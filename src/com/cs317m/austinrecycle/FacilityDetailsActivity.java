@@ -19,7 +19,7 @@ import android.widget.TextView;
 public class FacilityDetailsActivity extends Activity {
 	private static final String TAG = "FacilityDetailsActivity.java";
 	
-	private ArrayList<FacilityItem> _facilityItem;
+	private ArrayList<FacilityItem> _facilityItemArray;
 	private FacilityItem _data;
 	private int _position;
 	private double _facility_lat;
@@ -35,9 +35,9 @@ public class FacilityDetailsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.facility_details_activity);
 		 
-		_facilityItem = this.getIntent().getParcelableArrayListExtra("SELECTED_FACILITY");
+		_facilityItemArray = this.getIntent().getParcelableArrayListExtra("SELECTED_FACILITY");
 		_position = this.getIntent().getIntExtra("SELECTED_POSITION", -1);
-		_data = _facilityItem.get(_position);
+		_data = _facilityItemArray.get(_position);
 		
 		_mapView = ((MapFragment) this.getFragmentManager().findFragmentById(R.id.map)).getMap();
 		
@@ -52,7 +52,7 @@ public class FacilityDetailsActivity extends Activity {
 //                .snippet("The most populous city in Australia.")
                 .position(_facility_location));
 		
-		Log.d(TAG, "_facilityItem: " + _facilityItem.size());
+		Log.d(TAG, "_facilityItemArray: " + _facilityItemArray.size());
 		Log.d(TAG, "_position: " + _position);
 		
 		_dialButton = (Button) this.findViewById(R.id.dial_button);

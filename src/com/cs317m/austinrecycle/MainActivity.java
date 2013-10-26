@@ -36,21 +36,21 @@ public class MainActivity extends Activity implements OnItemClickListener{
 	private Button _searchButton;
 	private String[] _materialNames;
 	private TypedArray _icons;
-	private ArrayList<MaterialItem> _materialItem;
+	private ArrayList<MaterialItem> _materialItemArray;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		_materialItem = new ArrayList<MaterialItem>();
+		_materialItemArray = new ArrayList<MaterialItem>();
 		
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				_materialEditText.setText("");
-				_materialItem.clear();
+				_materialItemArray.clear();
 				popChooseMaterialDialog();
 			}
 		});
@@ -137,12 +137,12 @@ public class MainActivity extends Activity implements OnItemClickListener{
 		
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
-			_materialItem.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
+			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 		}
 		_icons.recycle();
 		
 		// Create instance of custom adapter
-		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItem);
+		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
 		
 		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
@@ -151,12 +151,14 @@ public class MainActivity extends Activity implements OnItemClickListener{
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				_materialItem.remove(position);
-				_adapter.notifyDataSetChanged();
-				
-				// Get the string at the clicked position
-				String clickedMaterial = _materialNames[position];
+				// Grab the clicked item's name before removing the item from
+				String clickedMaterial = _materialItemArray.get(position).getName();
 				String oldString = _materialEditText.getText().toString();
+				
+				// Remove clicked item from the adapter's data array and update
+				// => It gets removed from the dialog
+				_materialItemArray.remove(position);
+				_adapter.notifyDataSetChanged();		
 				
 				// Format into comma separated string
 				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;

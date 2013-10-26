@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,8 +18,17 @@ public class Model {
     String TAG = "Model";
     HttpURLConnection _conn;
     
-    public Model()
+    // Must know user's location to sort facilities
+    double _user_lat;
+    double _user_long;
+    
+    public Model(double user_lat, double user_long)
     {
+    	// Save user location
+    	_user_lat = user_lat;
+    	_user_long = user_long;
+    	
+    	// Initialize connection object
         try
         {
             _conn.setReadTimeout(10000);
@@ -87,9 +98,9 @@ public class Model {
                 String addr_long = addr_obj.getString("longitude");
                 String addr_human = addr_obj.getString("human_address");
                 
-                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num);
+                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, 
+                										   addr_human, phone_num);
                 facilities.add(facility_i);
-                // TODO: Sort
             }
         }
         catch (JSONException e)
@@ -97,6 +108,9 @@ public class Model {
             Log.e(TAG, e.toString());
         }
 
+        // Sort facilities by distance from the user
+        Collections.sort(facilities, new FacilityComparator());
+        
         return facilities;
     }
     
@@ -107,5 +121,30 @@ public class Model {
     private String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+    
+    /**
+     * Sorts two FacilityItems based on distance from user's location
+     */
+    private class FacilityComparator implements Comparator<FacilityItem> {
+    	public int compare(FacilityItem item1, FacilityItem item2) {
+    		Double lat1 = Double.valueOf(item1.getAddrLat());
+    		Double long1 = Double.valueOf(item1.getAddrLong());
+    		Double lat2 = Double.valueOf(item2.getAddrLat());
+    		Double long2 = Double.valueOf(item2.getAddrLong());
+    		
+    		// Calculate relative distance by treating lat and long as if they
+    		// were just an x and y axis
+    		Double dist1 = Math.sqrt(Math.pow(lat1 - _user_lat, 2) + 
+    								 Math.pow(long1 - _user_long, 2));
+    		Double dist2 = Math.sqrt(Math.pow(lat2 - _user_lat, 2) + 
+					 				 Math.pow(long2 - _user_long, 2));
+    		
+    		// Compare and return comparator relation
+    		if(dist1 == dist2) return 0;
+    		else if(dist1 < dist2) return -1;
+    		else return 1;
+    			
+    	}
     }
 }

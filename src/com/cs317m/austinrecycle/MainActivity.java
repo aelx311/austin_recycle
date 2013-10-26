@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -29,8 +28,7 @@ public class MainActivity extends Activity {
 	
 	private EditText _materialEditText;
 	private Button _searchButton;
-	private AutoCompleteTextView _locationAutoCompleteTextViewt;
-	
+	private AutoCompleteTextView _locationAutoCompleteTextView;
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
 	private String[] _materialNames;
@@ -76,12 +74,13 @@ public class MainActivity extends Activity {
 		});
 		
 		// Location AutoComplete using suggestions from Google Location API
-		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
-		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
+		_locationAutoCompleteTextView.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
+		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				String str = (String) adapterView.getItemAtPosition(position);
+				// TODO: create a special case for "Current location"
 				Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
 			}
 		});

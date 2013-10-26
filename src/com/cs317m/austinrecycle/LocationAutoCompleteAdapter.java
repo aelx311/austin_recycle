@@ -74,14 +74,16 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
     }
 
     private ArrayList<String> autocomplete(String input) {
-    	Log.d(TAG, "BEGIN autoComplete()");
+    	Log.d(TAG, "entering autoComplete()");
         ArrayList<String> resultList = null;
         
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?sensor=false&key=" + API_KEY);
+            sb.append("?sensor=true");
+            sb.append("&types=geocode");
+            sb.append("&key=" + API_KEY);
             sb.append("&components=country:us");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
             
@@ -120,13 +122,12 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             resultList = new ArrayList<String>(predsJsonArray.length());
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
-//                Log.d(TAG, resultList.toString());
             }
         } catch (JSONException e) {
             Log.e(TAG, "Cannot process JSON results", e);
         }
         
-    	Log.d(TAG, "END autoComplete()");
+    	Log.d(TAG, "leaving autoComplete()");
     	Log.d(TAG, resultList.toString());
         return resultList;
     }

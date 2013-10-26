@@ -185,7 +185,9 @@ public class MainActivity extends Activity implements OnItemClickListener{
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
     {
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
-            Model m = new Model();
+        	// TODO: Currently passing in a hardcoded user location
+        	//       This needs to be dynamically populated based on user input
+            Model m = new Model(30.26032043200047, -97.71022065999966);
             return m.getFacilities(materials);
         }
         

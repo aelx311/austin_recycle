@@ -17,16 +17,16 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	
 	private Context _context;
 	private int _layoutResourceId;
-	private ArrayList<MaterialItem> _item = null;
+	private ArrayList<MaterialItem> _itemArray = null;
 	private ImageView _icon;
 	private TextView _name;
 //	private CheckBox _checkbox;
 	
-	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> item) {
-		super(context, layoutResourceId, item);
+	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> itemArray) {
+		super(context, layoutResourceId, itemArray);
 		_context = context;
 		_layoutResourceId = layoutResourceId;
-		_item = item;
+		_itemArray = itemArray;
 	}
 	
 	@Override
@@ -40,7 +40,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		_name = (TextView) convertView.findViewById(R.id.material_name);
 //		_checkbox = (CheckBox) convertView.findViewById(R.id.material_checkbox);
 		
-		MaterialItem data = _item.get(position);
+		MaterialItem data = _itemArray.get(position);
 		
 		_icon.setImageResource(data.getIcon());
 		Log.d(TAG, "icon: " + data.getIcon());

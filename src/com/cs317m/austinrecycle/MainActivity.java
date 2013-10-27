@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -41,6 +43,7 @@ public class MainActivity extends Activity {
 	private Geocoder _geocoder;
 	private double _current_lat;
 	private double _current_long;
+	private ProgressDialog _progressDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +74,10 @@ public class MainActivity extends Activity {
 					Toast.makeText(MainActivity.this, "Please enter a location", Toast.LENGTH_SHORT).show();
 				}
 				else {
+					_progressDialog = new ProgressDialog(MainActivity.this);
+					_progressDialog.setTitle("Searching");
+					_progressDialog.setMessage("Searching for locations...");
+					_progressDialog.show();
 					// Get the latitude and longitude of current location
 					try {
 						String currentAddress = _locationAutoCompleteTextView.getText().toString();
@@ -100,9 +107,8 @@ public class MainActivity extends Activity {
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				String str = (String) adapterView.getItemAtPosition(position);
+//				String str = (String) adapterView.getItemAtPosition(position);
 				// TODO: create a special case for "Current location"
-				Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
@@ -192,8 +198,7 @@ public class MainActivity extends Activity {
      * 
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
-    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
-    {
+    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
             Model m = new Model(_current_lat, _current_long);
             return m.getFacilities(materials);
@@ -204,6 +209,7 @@ public class MainActivity extends Activity {
          * has finished and doInBackground returns its result.
          */
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
+        	_progressDialog.dismiss();
         	// Starting the ResultListActivity
         	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);

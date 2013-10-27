@@ -13,6 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
@@ -81,7 +84,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
             sb.append("?sensor=true");
-            sb.append("&types=geocode");
             sb.append("&key=" + API_KEY);
             sb.append("&components=country:us");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));

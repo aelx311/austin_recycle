@@ -13,7 +13,8 @@
         android:id="@+id/materials_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/materials_label"
+        android:text="@string/materials_label"
+        android:textColorHint="@color/Black"
         android:textSize="35sp" />
     
     <EditText
@@ -26,10 +27,10 @@
         
     <TextView
         android:id="@+id/location_label"
-        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/location_label"
+        android:layout_marginTop="30dp"
+        android:text="@string/location_label"
         android:textSize="35sp" />
     
     <AutoCompleteTextView
@@ -45,11 +46,12 @@
         
         <Button
             android:id="@+id/search_button"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:hint="@string/search_button_hint"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true" />
+            android:text="@string/search_button_hint"
+            android:textSize="35sp" />
         
     </RelativeLayout>
     

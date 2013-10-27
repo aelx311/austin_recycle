@@ -1,12 +1,18 @@
 package com.cs317m.austinrecycle;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -15,28 +21,29 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-//import android.widget.AdapterView.OnItemClickListener;
 
-public class MainActivity extends Activity implements OnItemClickListener{
+public class MainActivity extends Activity {
 
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
-	private AutoCompleteTextView _locationAutoCompleteTextViewt;
+	private Button _searchButton;
+	private AutoCompleteTextView _locationAutoCompleteTextView;
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
-
-	private Button _searchButton;
 	private String[] _materialNames;
 	private TypedArray _icons;
 	private ArrayList<MaterialItem> _materialItemArray;
+	private Geocoder _geocoder;
+	private double _current_lat;
+	private double _current_long;
+	private ProgressDialog _progressDialog;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,8 @@ public class MainActivity extends Activity implements OnItemClickListener{
 		setContentView(R.layout.activity_main);
 		
 		_materialItemArray = new ArrayList<MaterialItem>();
-		
+		_geocoder = new Geocoder(this);
+
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
@@ -54,49 +62,61 @@ public class MainActivity extends Activity implements OnItemClickListener{
 				popChooseMaterialDialog();
 			}
 		});
-		
+		 
 		_searchButton = (Button) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
-				String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
-				Log.d(TAG, "INSIDE BUTTON ONCLICK = " +selectedMaterial);
-				
-				// Convert to String array to pass as parameter
-				String[] selectedMaterialArray = selectedMaterial.split(",");
-				
-				// Needs to create a new task every time
-				new NetworkRequestTask().execute(selectedMaterialArray);
+				if(_materialEditText.getText().toString().equals("")) {
+					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
+				}
+				else if(_locationAutoCompleteTextView.getText().toString().equals("")) {
+					Toast.makeText(MainActivity.this, "Please enter a location", Toast.LENGTH_SHORT).show();
+				}
+				else {
+					_progressDialog = new ProgressDialog(MainActivity.this);
+					_progressDialog.setTitle("Searching");
+					_progressDialog.setMessage("Searching for locations...");
+					_progressDialog.show();
+					// Get the latitude and longitude of current location
+					try {
+						String currentAddress = _locationAutoCompleteTextView.getText().toString();
+						List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
+						_current_lat = returnedAddress.get(0).getLatitude();
+						_current_long = returnedAddress.get(0).getLongitude();
+					}
+					catch(IOException e) {
+						Log.e(TAG, "Error occured in Geocoder: ", e);
+					}
+					
+					// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
+					String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
+					
+					// Convert to String array to pass as parameter
+					String[] selectedMaterialArray = selectedMaterial.split(",");
+					
+					// Needs to create a new task every time
+					new NetworkRequestTask().execute(selectedMaterialArray);	
+				}
 			}
 		});
 		
-
-//	    AutoCompleteTextView autoCompView = (AutoCompleteTextView) findViewById(R.id.autocomplete);
-//	    autoCompView.setAdapter(new PlacesAutoCompleteAdapter(this, R.layout.list_item));
-		
-		/*
-		 * Location AutoComplete using suggestions from Google Location API
-		 * TODO: Get API key
-		 * 
-		 */
-		_locationAutoCompleteTextViewt = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextViewt.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
-		_locationAutoCompleteTextViewt.setOnItemClickListener(this);
-		
-//		_locationAutoCompleteTextViewt.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//				Log.d(TAG, _locationAutoCompleteTextViewt.getText().toString());
-//			}
-//		});
+		// Location AutoComplete using suggestions from Google Location API
+		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
+		_locationAutoCompleteTextView.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
+		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+//				String str = (String) adapterView.getItemAtPosition(position);
+				// TODO: create a special case for "Current location"
+			}
+		});
 	}
 	
-	public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-		String str = (String) adapterView.getItemAtPosition(position);
-		Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
-	}
-
+	/*
+	 * Display list of materials
+	 * Selected materials will be removed from the list
+	 */
 	private void popChooseMaterialDialog() {
 		Log.d(TAG, "entering popChooseMaterialDialog");
 		
@@ -129,25 +149,19 @@ public class MainActivity extends Activity implements OnItemClickListener{
 			}
 		});
 		
-		// Read material name
+		// Read material names and icons from arrays.xml
 		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
-		
-		// Read material icon
 		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
-		
+
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
 			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 		}
 		_icons.recycle();
 		
-		// Create instance of custom adapter
+		// Setup custom adapter
 		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
-		
-		// Set ListView with custom adapter
 		_listView.setAdapter(_adapter);
-	
-		// Set AdapterView listener
 		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -184,12 +198,9 @@ public class MainActivity extends Activity implements OnItemClickListener{
      * 
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
-    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>>
-    {
+    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
-        	// TODO: Currently passing in a hardcoded user location
-        	//       This needs to be dynamically populated based on user input
-            Model m = new Model(30.26032043200047, -97.71022065999966);
+            Model m = new Model(_current_lat, _current_long);
             return m.getFacilities(materials);
         }
         
@@ -198,9 +209,12 @@ public class MainActivity extends Activity implements OnItemClickListener{
          * has finished and doInBackground returns its result.
          */
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
+        	_progressDialog.dismiss();
         	// Starting the ResultListActivity
         	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
+        	resultIntent.putExtra("CURRENT_LAT", _current_lat);
+        	resultIntent.putExtra("CURRENT_LONG", _current_long);
 			MainActivity.this.startActivity(resultIntent);
         }
     }

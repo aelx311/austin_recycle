@@ -5,9 +5,9 @@
     <string name="app_name">Austin Recycle Drop Off</string>
     <string name="action_settings">Settings</string>
     <string name="materials_label">Materials</string>
-     <string name="location_label">Location</string>
-     <string name="materials_hint">Click to select materials</string>
-     <string name="location_hint">Enter location here</string>
+    <string name="location_label">Current Location</string>
+    <string name="materials_hint">Click to select materials</string>
+    <string name="location_hint">Enter location here</string>
     <string name="oil">Oil</string>
     <string name="oil_filter">Oil Filter</string>
     <string name="fluids">Fluids</string>
@@ -17,5 +17,6 @@
     <string name="scrap_metal">Scrap Metal</string>
     <string name="aluminum">Aluminum</string>
     <string name="search_button_hint">Go</string>
+    <string name="get_direction">Get direction</string>
 
 </resources>

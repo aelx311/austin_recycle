@@ -27,11 +27,11 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		
 		Log.d(TAG, "_item size: " + _item.size());
 		// Make sure the object is passed correctly
-		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
-    	for(FacilityItem x : _item) {
-    		Log.d(TAG, x.getName());
-    	}
-    	Log.d(TAG, "END PRINTING _facilitiesItem");
+//		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
+//    	for(FacilityItem x : _item) {
+//    		Log.d(TAG, x.getName());
+//    	}
+//    	Log.d(TAG, "END PRINTING _facilitiesItem");
 	}
 	
 	@Override
@@ -53,9 +53,9 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		else {
 			convertView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
 		}
+		
 		_facility_name.setText((position+1) + ". " + data.getName());
 		_facility_address.setText(data.getAddrHuman());
-		
 		return convertView;
 	}
 }

@@ -13,6 +13,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
@@ -51,7 +54,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
                 if (constraint != null) {
                     // Retrieve the autocomplete results.
                     resultList = autocomplete(constraint.toString());
-                	Log.d(TAG, "resultList: " + constraint.toString());
                     
                     // Assign the data to the FilterResults
                     filterResults.values = resultList;
@@ -74,14 +76,15 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
     }
 
     private ArrayList<String> autocomplete(String input) {
-    	Log.d(TAG, "BEGIN autoComplete()");
+    	Log.d(TAG, "entering autoComplete()");
         ArrayList<String> resultList = null;
         
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try {
             StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?sensor=false&key=" + API_KEY);
+            sb.append("?sensor=true");
+            sb.append("&key=" + API_KEY);
             sb.append("&components=country:us");
             sb.append("&input=" + URLEncoder.encode(input, "utf8"));
             
@@ -95,7 +98,6 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             while ((read = in.read(buff)) != -1) {
                 jsonResults.append(buff, 0, read);
             }
-            Log.d(TAG, jsonResults.toString());
         }
         catch (MalformedURLException e) {
             Log.e(TAG, "Error processing Places API URL", e);
@@ -120,14 +122,12 @@ public class LocationAutoCompleteAdapter extends ArrayAdapter<String> implements
             resultList = new ArrayList<String>(predsJsonArray.length());
             for (int i = 0; i < predsJsonArray.length(); i++) {
                 resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
-//                Log.d(TAG, resultList.toString());
             }
         } catch (JSONException e) {
             Log.e(TAG, "Cannot process JSON results", e);
         }
         
-    	Log.d(TAG, "END autoComplete()");
-    	Log.d(TAG, resultList.toString());
+    	Log.d(TAG, "leaving autoComplete()");
         return resultList;
     }
 }

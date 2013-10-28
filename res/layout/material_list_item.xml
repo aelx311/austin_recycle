@@ -12,20 +12,10 @@
 
     <TextView
         android:id="@+id/material_name"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/material_checkbox"
         android:layout_toRightOf="@id/material_icon"
         android:hint="@string/materials_hint"
         android:layout_marginLeft="5dp"
         android:padding="3dp" />
-
-
-    <!-- 
-    <CheckBox
-        android:id="@+id/material_checkbox"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentRight="true" />
- -->
 </RelativeLayout>

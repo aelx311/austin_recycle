@@ -28,10 +28,12 @@ import android.content.res.TypedArray;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -114,11 +116,11 @@ public class MainActivity extends Activity {
 		
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextView.setThreshold(1);
+		_locationAutoCompleteTextView.setThreshold(2);
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                PlacesTask placesTask = new PlacesTask();
-                placesTask.execute(s.toString());
+            	PlacesTask placesTask = new PlacesTask();
+            	placesTask.execute(s.toString());	
             }
 
 			@Override
@@ -132,11 +134,13 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 			}
 		});
+		
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 //				String str = (String) adapterView.getItemAtPosition(position);
 				// TODO: create a special case for "Current location"
+				Log.d(TAG, "location clicked");
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});
@@ -314,7 +318,6 @@ public class MainActivity extends Activity {
             } catch (JSONException e) {
                 Log.e(TAG, "Cannot process JSON results", e);
             }
-            
             return resultList;
     	}
     	
@@ -323,6 +326,6 @@ public class MainActivity extends Activity {
     		LocationAutoCompleteAdapter locAdapter = new LocationAutoCompleteAdapter(MainActivity.this, R.layout.location_list_item, resultList);
     		_locationAutoCompleteTextView.setAdapter(locAdapter);
     		_locationAutoCompleteTextView.showDropDown();
-    	}	
+    	}
     }
 }

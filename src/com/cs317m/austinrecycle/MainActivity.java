@@ -21,19 +21,16 @@ import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
@@ -57,6 +54,7 @@ public class MainActivity extends Activity {
 	private double _current_lat;
 	private double _current_long;
 	private ProgressDialog _progressDialog;
+	private PlacesTask _placesTask;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -119,8 +117,8 @@ public class MainActivity extends Activity {
 		_locationAutoCompleteTextView.setThreshold(2);
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-            	PlacesTask placesTask = new PlacesTask();
-            	placesTask.execute(s.toString());	
+            	_placesTask = new PlacesTask();
+            	_placesTask.execute(s.toString());	
             }
 
 			@Override
@@ -141,6 +139,7 @@ public class MainActivity extends Activity {
 //				String str = (String) adapterView.getItemAtPosition(position);
 				// TODO: create a special case for "Current location"
 				Log.d(TAG, "location clicked");
+				_placesTask.cancel(true);
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});

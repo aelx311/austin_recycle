@@ -1,8 +1,17 @@
 package com.cs317m.austinrecycle;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.location.Address;
 import android.location.Geocoder;
@@ -16,6 +25,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -103,12 +114,30 @@ public class MainActivity extends Activity {
 		
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextView.setAdapter(new LocationAutoCompleteAdapter(this, R.layout.location_list_item));
+		_locationAutoCompleteTextView.setThreshold(1);
+		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                PlacesTask placesTask = new PlacesTask();
+                placesTask.execute(s.toString());
+            }
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+			}
+		});
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 //				String str = (String) adapterView.getItemAtPosition(position);
 				// TODO: create a special case for "Current location"
+				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});
 	}
@@ -199,6 +228,8 @@ public class MainActivity extends Activity {
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
+    	
+    	@Override
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
             Model m = new Model(_current_lat, _current_long);
             return m.getFacilities(materials);
@@ -208,6 +239,7 @@ public class MainActivity extends Activity {
          * Invoked in asynchronously in MainActivity when the network request 
          * has finished and doInBackground returns its result.
          */
+    	@Override
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
         	_progressDialog.dismiss();
         	// Starting the ResultListActivity
@@ -217,5 +249,80 @@ public class MainActivity extends Activity {
         	resultIntent.putExtra("CURRENT_LONG", _current_long);
 			MainActivity.this.startActivity(resultIntent);
         }
+    }
+    
+    /**
+     * Asynchronously get place suggestions from Google
+     */
+    private class PlacesTask extends AsyncTask<String, Void, ArrayList<String>>
+    {
+        private static final String TAG = "LocationAutoCompleteAdapter.java";
+        private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
+        private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
+        private static final String OUT_JSON = "/json";
+        private static final String API_KEY = "AIzaSyCnLUmKZNvy5P7R2p1RJw2fd4VGNRbcJBU";
+        
+        protected ArrayList<String> doInBackground(String... input) {
+			Log.d(TAG, "Async PlacesTask doInBackground(): ");
+
+    		ArrayList<String> resultList = null;
+            
+            HttpURLConnection conn = null;
+            StringBuilder jsonResults = new StringBuilder();
+            try {
+                StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
+                sb.append("?sensor=true");
+                sb.append("&key=" + API_KEY);
+                sb.append("&components=country:us");
+                sb.append("&input=" + URLEncoder.encode(input[0], "utf8"));
+                
+                URL url = new URL(sb.toString());
+                conn = (HttpURLConnection) url.openConnection();
+                InputStreamReader in = new InputStreamReader(conn.getInputStream());
+                
+                // Load the results into a StringBuilder
+                int read;
+                char[] buff = new char[1024];
+                while ((read = in.read(buff)) != -1) {
+                    jsonResults.append(buff, 0, read);
+                }
+            }
+            catch (MalformedURLException e) {
+                Log.e(TAG, "Error processing Places API URL", e);
+                return resultList;
+            }
+            catch (IOException e) {
+                Log.e(TAG, "Error connecting to Places API", e);
+                return resultList;
+            }
+            finally {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            }
+
+            try {
+                // Create a JSON object hierarchy from the results
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
+                
+                // Extract the Place descriptions from the results
+                resultList = new ArrayList<String>(predsJsonArray.length());
+                for (int i = 0; i < predsJsonArray.length(); i++) {
+                    resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "Cannot process JSON results", e);
+            }
+            
+            return resultList;
+    	}
+    	
+    	protected void onPostExecute(ArrayList<String> resultList) {
+    		Log.d(TAG, "Async PlacesTask onPostExecute(): ");
+    		LocationAutoCompleteAdapter locAdapter = new LocationAutoCompleteAdapter(MainActivity.this, R.layout.location_list_item, resultList);
+    		_locationAutoCompleteTextView.setAdapter(locAdapter);
+    		_locationAutoCompleteTextView.showDropDown();
+    	}	
     }
 }

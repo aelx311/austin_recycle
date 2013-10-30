@@ -2,24 +2,31 @@
  * A class to store data about a recycling facility that is easier to work with than a JSON string.
  */
 
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
+
+import java.util.ArrayList;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 public class FacilityItem implements Parcelable{
+	
+	private static final String TAG = "FacilityItem";
 	private String _name;
 	private String _addr_lat;   // Address Latitude
 	private String _addr_long;  // Address Longitude
 	private String _addr_human; // Human Readable Address
 	private String _phone_num;
+	private ArrayList<String> _accepts;
 	
-	public FacilityItem(String name, String addr_lat, String addr_long, String addr_human, String phone_num) {
+	public FacilityItem(String name, String addr_lat, String addr_long, String addr_human, String phone_num, ArrayList<String> accepts) {
 		_name = name;
 		_addr_lat = addr_lat;
 		_addr_long = addr_long;
 		_addr_human = addr_human;
 		_phone_num = phone_num;
+		_accepts = accepts;
 	}
 	
 	public String getName()
@@ -47,28 +54,38 @@ public class FacilityItem implements Parcelable{
 		return _phone_num;
 	}
 	
+	public ArrayList<String> getAccepts() {
+		return _accepts;
+	}
+	
 	/*
-	 * In order to pass objects between activities, the objects have to be Parcleable
+	 * In order to pass objects between activities, the objects have to be Parcelable
 	 * Parceling part
 	 */
+	@SuppressWarnings("unchecked")
 	public FacilityItem(Parcel in) {
-		String[] data = new String[5];
-		in.readStringArray(data);
-		this._name = data[0];
-		this._addr_lat = data[1];
-		this._addr_long = data[2];
-		this._addr_human = data[3];
-		this._phone_num = data[4];
+		
+		this._name = in.readString();
+		this._addr_lat = in.readString();
+		this._addr_long = in.readString();
+		this._addr_human = in.readString();
+		this._phone_num = in.readString();
+		this._accepts = (ArrayList<String>) in.readSerializable();
 	}
 	
 	@Override
 	public int describeContents() {
-		return 0;
+		return this.hashCode();
 	}
 	
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeStringArray(new String[] {this._name, this._addr_lat, this._addr_long, this._addr_human, this._phone_num});
+		dest.writeString(_name);
+		dest.writeString(_addr_lat);
+		dest.writeString(_addr_long);
+		dest.writeString(_addr_human);
+		dest.writeString(_phone_num);
+		dest.writeSerializable(_accepts);
 	}
 	
 	public static final Parcelable.Creator<FacilityItem> CREATOR = new Parcelable.Creator<FacilityItem>() {

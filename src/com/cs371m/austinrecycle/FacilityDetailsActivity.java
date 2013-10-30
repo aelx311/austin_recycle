@@ -1,14 +1,15 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
 
+import android.support.v4.app.FragmentActivity;
+
+import com.cs317m.austinrecycle.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import android.support.v4.app.FragmentActivity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -18,7 +19,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-
 
 public class FacilityDetailsActivity extends FragmentActivity {
 	private static final String TAG = "FacilityDetailsActivity.java";
@@ -53,8 +53,11 @@ public class FacilityDetailsActivity extends FragmentActivity {
 		_facility_long = Double.valueOf(_data.getAddrLong());
 		_facility_location = new LatLng(_facility_lat, _facility_long);
 		
-		// Set up map fragment on screen
-		setUpMapIfNeeded();
+		// Set up MapFragment
+		_mapView = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+        _mapView.setMyLocationEnabled(true);
+        _mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 17));
+        _mapView.addMarker(new MarkerOptions().title(_data.getName()).position(_facility_location));
 		
 		Log.d(TAG, "_facilityItemArray: " + _facilityItemArray.size());
 		Log.d(TAG, "_position: " + _position);
@@ -89,21 +92,5 @@ public class FacilityDetailsActivity extends FragmentActivity {
 				FacilityDetailsActivity.this.startActivity(googleMaps);
 			}
 		});
-	}
-	
-	private void setUpMapIfNeeded() {
-	    // Do a null check to confirm that we have not already instantiated the map.
-	    if (_mapView == null) {
-	    	_mapView = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-	        // Check if we were successful in obtaining the map.
-	        if (_mapView != null) {
-	            // The Map is verified. It is now safe to manipulate the map.
-	        	_mapView.setMyLocationEnabled(true);
-	    		_mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 17));
-	    		_mapView.addMarker(new MarkerOptions()
-	                    .title(_data.getName())
-	                    .position(_facility_location));
-	        }
-	    }
 	}
 }

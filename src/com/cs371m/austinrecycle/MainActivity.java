@@ -1,4 +1,4 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.cs317m.austinrecycle.R;
+
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -21,24 +23,29 @@ import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
-import android.widget.Button;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -68,6 +75,7 @@ public class MainActivity extends Activity {
 		_geocoder = new Geocoder(this);
 
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
+		_materialEditText.setInputType(InputType.TYPE_NULL);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -76,7 +84,7 @@ public class MainActivity extends Activity {
 				popChooseMaterialDialog();
 			}
 		});
-		 
+		
 		_searchButton = (ImageButton) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -118,6 +126,7 @@ public class MainActivity extends Activity {
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextView.setThreshold(2);
+		
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             	_placesTask = new PlacesTask();
@@ -163,7 +172,7 @@ public class MainActivity extends Activity {
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
-		_listView.setBackground(null);
+		_listView.setBackgroundColor(Color.WHITE);
 		materialDialogBuilder.setView(popupLayout);
 		
 		// Dialog CANCEL button
@@ -233,6 +242,7 @@ public class MainActivity extends Activity {
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
+    	private static final String TAG = "MainActivity.NetworkRequestTask";
     	
     	@Override
         protected ArrayList<FacilityItem> doInBackground(String... materials) {

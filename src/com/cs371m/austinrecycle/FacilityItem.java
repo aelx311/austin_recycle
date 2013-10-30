@@ -8,11 +8,9 @@ import java.util.ArrayList;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class FacilityItem implements Parcelable{
 	
-	private static final String TAG = "FacilityItem";
 	private String _name;
 	private String _addr_lat;   // Address Latitude
 	private String _addr_long;  // Address Longitude
@@ -58,13 +56,12 @@ public class FacilityItem implements Parcelable{
 		return _accepts;
 	}
 	
-	/*
+	/**
 	 * In order to pass objects between activities, the objects have to be Parcelable
 	 * Parceling part
 	 */
 	@SuppressWarnings("unchecked")
 	public FacilityItem(Parcel in) {
-		
 		this._name = in.readString();
 		this._addr_lat = in.readString();
 		this._addr_long = in.readString();

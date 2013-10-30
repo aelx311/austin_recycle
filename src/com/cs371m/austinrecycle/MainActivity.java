@@ -23,7 +23,6 @@ import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -32,20 +31,15 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
@@ -246,7 +240,9 @@ public class MainActivity extends Activity {
     	
     	@Override
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
+    		Log.d(TAG, "begin doInBackground");
             Model m = new Model(_current_lat, _current_long);
+            Log.d(TAG, "end doInBackground");
             return m.getFacilities(materials);
         }
         
@@ -256,21 +252,22 @@ public class MainActivity extends Activity {
          */
     	@Override
         protected void onPostExecute(ArrayList<FacilityItem> facilities) {
-        	_progressDialog.dismiss();
+    		Log.d(TAG, "begin onPostExecute");
+    		_progressDialog.dismiss();
         	// Starting the ResultListActivity
         	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
         	resultIntent.putExtra("CURRENT_LAT", _current_lat);
         	resultIntent.putExtra("CURRENT_LONG", _current_long);
 			MainActivity.this.startActivity(resultIntent);
+			Log.d(TAG, "end onPostExecute");
         }
     }
     
     /**
      * Asynchronously get place suggestions from Google
      */
-    private class PlacesTask extends AsyncTask<String, Void, ArrayList<String>>
-    {
+    private class PlacesTask extends AsyncTask<String, Void, ArrayList<String>> {
         private static final String TAG = "MainActivity.PlacesTask";
         private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
         private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
@@ -281,7 +278,6 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "Async PlacesTask doInBackground(): ");
 
     		ArrayList<String> resultList = null;
-            
             HttpURLConnection conn = null;
             StringBuilder jsonResults = new StringBuilder();
             try {

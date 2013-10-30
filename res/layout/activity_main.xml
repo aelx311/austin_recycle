@@ -22,7 +22,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/materials_hint"
-        android:inputType="none"
         android:cursorVisible="false"
         android:clickable="true" />
         
@@ -39,9 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/location_hint"
-        android:inputType="text"
-        android:imeOptions="actionGo"
-        android:clickable="true" />   
+        android:inputType="textMultiLine"
+        android:maxLines="2" />
         
     <RelativeLayout
         android:layout_width="match_parent"

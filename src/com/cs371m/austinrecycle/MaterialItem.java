@@ -1,4 +1,4 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 public class MaterialItem {
 	private int _icon;

@@ -1,4 +1,4 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;

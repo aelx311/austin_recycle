@@ -1,32 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:background="@color/White" >
     
-    <TextView
-        android:id="@+id/facility_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textSize="20sp" />
-    
-    <!-- GOOGLE MAP VIEW OF THE LOCATION -->
-   <fragment  
-       android:id="@+id/map"
-       android:name="com.google.android.gms.maps.MapFragment"
-       android:layout_width="match_parent"
-       android:layout_height="300dp" />
-    
-    <Button
-        android:id="@+id/dial_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    
-    <Button
-        android:id="@+id/direction_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/get_direction" />
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
+	
+	    <TextView
+	        android:id="@+id/facility_name"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:paddingTop="10dp"
+	        android:textSize="25sp"
+	        android:textStyle="bold"
+	        android:layout_marginBottom="5dp" />
+	    
+	    <TextView
+	        android:id="@+id/facility_address"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp"
+	        android:textSize="15sp" />
+	    
+	    <TextView
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/accepts"
+	        android:paddingLeft="10dp"
+	        android:paddingRight="10dp" />
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal"
+	        android:padding="3dp"
+	        android:layout_marginBottom="5dp" >
 
-</LinearLayout>
+	        <ImageView
+	            android:id="@+id/oil_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/oil"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/oil_filter_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/oil_filter"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/fluids_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/fluids"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/tires_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/tires"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/batteries_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/batteries"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/newspapers_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/newspapers"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/scrap_metal_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/scrap_metal"
+	            android:visibility="gone" />
+
+	        <ImageView
+	            android:id="@+id/aluminum_icon"
+	            android:layout_width="30dp"
+	            android:layout_height="30dp"
+	            android:layout_margin="3dp"
+	            android:contentDescription="@string/none"
+	            android:src="@drawable/aluminum"
+	            android:visibility="gone" />
+	    </LinearLayout>
+	
+	    <!-- GOOGLE MAP VIEW OF THE LOCATION -->
+	    <fragment
+	        android:id="@+id/map"
+	        android:name="com.google.android.gms.maps.SupportMapFragment"
+	        android:layout_width="match_parent"
+	        android:layout_height="350dp"
+	        android:layout_marginBottom="10dp" />
+	
+	    <Button
+	        android:id="@+id/dial_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+	
+	    <Button
+	        android:id="@+id/direction_button"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/get_direction" />
+	</LinearLayout>
+
+</ScrollView>

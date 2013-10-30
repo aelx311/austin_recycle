@@ -1,6 +1,8 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
+
+import com.cs317m.austinrecycle.R;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -24,8 +26,10 @@ public class ResultListActivity extends ListActivity {
 		super.onCreate(savedInstanceState);
 		_listView = this.getListView();
 		_facilityItem = this.getIntent().getParcelableArrayListExtra("RETURNED_RESULT");
+		Log.d(TAG, "size: " + _facilityItem.size());
 		_current_lat = this.getIntent().getDoubleExtra("CURRENT_LAT", 0);
 		_current_long = this.getIntent().getDoubleExtra("CURRENT_LONG", 0);
+		
 		
 		// Make sure the object is passed correctly
 //		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");

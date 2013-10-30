@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             	_placesTask = new PlacesTask();
-            	_placesTask.execute(s.toString());	
+            	_placesTask.execute(s.toString());
             }
 
 			@Override
@@ -137,8 +137,6 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 //				String str = (String) adapterView.getItemAtPosition(position);
-				// TODO: create a special case for "Current location"
-				Log.d(TAG, "location clicked");
 				_placesTask.cancel(true);
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
@@ -317,9 +315,11 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < predsJsonArray.length(); i++) {
                     resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
                 }
-            } catch (JSONException e) {
+            }
+            catch (JSONException e) {
                 Log.e(TAG, "Cannot process JSON results", e);
             }
+            
             return resultList;
     	}
     	

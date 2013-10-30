@@ -86,6 +86,7 @@ public class Model {
         try 
         {
             JSONArray resp_array = new JSONArray(response);
+            Log.d(TAG, resp_array.toString());
             for(int i = 0; i < resp_array.length(); ++i)
             {
                 JSONObject obj_i = resp_array.getJSONObject(i);
@@ -99,7 +100,6 @@ public class Model {
                 
                 String addr_lat = addr_obj.getString("latitude");
                 String addr_long = addr_obj.getString("longitude");
-               
                 
                 FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num);
                 facilities.add(facility_i);

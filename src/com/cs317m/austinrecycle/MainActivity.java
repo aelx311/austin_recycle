@@ -162,6 +162,7 @@ public class MainActivity extends Activity {
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
+		_listView.setBackground(null);
 		materialDialogBuilder.setView(popupLayout);
 		
 		// Dialog CANCEL button
@@ -259,7 +260,7 @@ public class MainActivity extends Activity {
      */
     private class PlacesTask extends AsyncTask<String, Void, ArrayList<String>>
     {
-        private static final String TAG = "LocationAutoCompleteAdapter.java";
+        private static final String TAG = "MainActivity.PlacesTask";
         private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
         private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
         private static final String OUT_JSON = "/json";
@@ -275,9 +276,11 @@ public class MainActivity extends Activity {
             try {
                 StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
                 sb.append("?sensor=true");
-                sb.append("&key=" + API_KEY);
                 sb.append("&components=country:us");
                 sb.append("&input=" + URLEncoder.encode(input[0], "utf8"));
+                sb.append("&country=austin");
+                sb.append("&types=geocode");
+                sb.append("&key=" + API_KEY);
                 
                 URL url = new URL(sb.toString());
                 conn = (HttpURLConnection) url.openConnection();

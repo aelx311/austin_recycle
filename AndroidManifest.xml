@@ -11,7 +11,7 @@
     <uses-permission android:name="com.cs317m.austinrecycle.permission.MAPS_RECEIVE" />
 
     <uses-sdk
-        android:minSdkVersion="11"
+        android:minSdkVersion="12"
         android:targetSdkVersion="17" />
 
     <!-- PERMISSIONS USED IN THE APP -->

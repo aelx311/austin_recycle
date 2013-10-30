@@ -93,13 +93,15 @@ public class Model {
                 String phone_num = obj_i.getString("phone");
                 
                 String addr_obj_string = obj_i.getString("address");
+                
                 JSONObject addr_obj = new JSONObject(addr_obj_string);
-                String addr_lat = addr_obj.getString("latitude");
-                String addr_long = addr_obj.getString("longitude");
                 String addr_human = addr_obj.getString("human_address");
                 
-                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, 
-                										   addr_human, phone_num);
+                String addr_lat = addr_obj.getString("latitude");
+                String addr_long = addr_obj.getString("longitude");
+               
+                
+                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num);
                 facilities.add(facility_i);
             }
         }

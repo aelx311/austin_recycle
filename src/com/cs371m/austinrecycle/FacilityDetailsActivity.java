@@ -53,10 +53,10 @@ public class FacilityDetailsActivity extends FragmentActivity {
 		_facility_long = Double.valueOf(_data.getAddrLong());
 		_facility_location = new LatLng(_facility_lat, _facility_long);
 		
-		// Set up MapFragment
+		// Set up SupportMapFragment
 		_mapView = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         _mapView.setMyLocationEnabled(true);
-        _mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 17));
+        _mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 19));
         _mapView.addMarker(new MarkerOptions().title(_data.getName()).position(_facility_location));
 		
 		Log.d(TAG, "_facilityItemArray: " + _facilityItemArray.size());

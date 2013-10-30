@@ -1,6 +1,8 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
+
+import com.cs317m.austinrecycle.R;
 
 import android.app.ListActivity;
 import android.content.Intent;

@@ -1,10 +1,12 @@
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.cs317m.austinrecycle.R;
 
 import android.content.Context;
 import android.graphics.Color;

@@ -2,7 +2,7 @@
  * A class to store data about a recycling facility that is easier to work with than a JSON string.
  */
 
-package com.cs317m.austinrecycle;
+package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
 

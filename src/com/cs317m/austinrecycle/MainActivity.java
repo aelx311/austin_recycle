@@ -31,10 +31,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -43,7 +46,7 @@ public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
-	private Button _searchButton;
+	private ImageButton _searchButton;
 	private AutoCompleteTextView _locationAutoCompleteTextView;
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
@@ -74,7 +77,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		 
-		_searchButton = (Button) this.findViewById(R.id.search_button);
+		_searchButton = (ImageButton) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -203,7 +206,7 @@ public class MainActivity extends Activity {
 				// Remove clicked item from the adapter's data array and update
 				// => It gets removed from the dialog
 				_materialItemArray.remove(position);
-				_adapter.notifyDataSetChanged();		
+				_adapter.notifyDataSetChanged();
 				
 				// Format into comma separated string
 				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;

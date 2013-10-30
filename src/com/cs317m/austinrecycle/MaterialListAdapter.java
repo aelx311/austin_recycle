@@ -33,7 +33,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		Log.d(TAG, "in MaterialListAdapter getView");
+		Log.d(TAG, "begin MaterialListAdapter getView");
 		View rowView = convertView;
 		if(rowView == null) {
 			LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -52,6 +52,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		holder._name.setText(_data.getName());
 		Log.d(TAG, "name: " + _data.getName());
 		
+		Log.d(TAG, "end MaterialListAdapter getView");
 		return rowView;
 	}
 }

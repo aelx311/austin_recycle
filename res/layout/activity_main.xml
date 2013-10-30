@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/materials_hint"
         android:inputType="none"
+        android:cursorVisible="false"
         android:clickable="true" />
         
     <TextView
@@ -43,9 +44,9 @@
         android:clickable="true" />   
         
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" >
-        
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <!-- 
         <Button
             android:id="@+id/search_button"
             android:layout_width="100dp"
@@ -54,7 +55,19 @@
             android:layout_alignParentRight="true"
             android:text="@string/search_button_hint"
             android:textSize="35sp" />
-        
+         -->
+
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/search_button"
+            android:contentDescription="@string/none" />
+
     </RelativeLayout>
     
 </LinearLayout>

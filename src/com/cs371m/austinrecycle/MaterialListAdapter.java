@@ -2,8 +2,6 @@ package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
 
-import com.cs317m.austinrecycle.R;
-
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;

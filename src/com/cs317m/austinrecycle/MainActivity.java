@@ -233,6 +233,7 @@ public class MainActivity extends Activity {
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
     private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
+    	private static final String TAG = "MainActivity.NetworkRequestTask";
     	
     	@Override
         protected ArrayList<FacilityItem> doInBackground(String... materials) {

@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,22 +87,31 @@ public class Model {
         try 
         {
             JSONArray resp_array = new JSONArray(response);
-            Log.d(TAG, resp_array.toString());
+            
             for(int i = 0; i < resp_array.length(); ++i)
             {
                 JSONObject obj_i = resp_array.getJSONObject(i);
+                Iterator<?> itr = obj_i.keys();
+                ArrayList<String> accepts = new ArrayList<String>();
+                while(itr.hasNext()) {
+                	String key = (String) itr.next();
+                	if(obj_i.getString(key).equals("Yes")) {
+                		accepts.add(key);
+                	}
+                }
+                
                 String name = obj_i.getString("business_name");
                 String phone_num = obj_i.getString("phone");
                 
                 String addr_obj_string = obj_i.getString("address");
-                
+                                
                 JSONObject addr_obj = new JSONObject(addr_obj_string);
                 String addr_human = addr_obj.getString("human_address");
                 
                 String addr_lat = addr_obj.getString("latitude");
                 String addr_long = addr_obj.getString("longitude");
                 
-                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num);
+                FacilityItem facility_i = new FacilityItem(name, addr_lat, addr_long, addr_human, phone_num, accepts);
                 facilities.add(facility_i);
             }
         }

@@ -13,8 +13,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.cs317m.austinrecycle.R;
-
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cs317m.austinrecycle"
+    package="com.cs371m.austinrecycle"
     android:versionCode="1"
     android:versionName="1.0" >
 
     <permission
-        android:name="com.cs317m.austinrecycle.permission.MAPS_RECEIVE"
+        android:name="com.cs371m.austinrecycle.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.cs317m.austinrecycle.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="com.cs371m.austinrecycle.permission.MAPS_RECEIVE" />
 
     <uses-sdk
         android:minSdkVersion="12"

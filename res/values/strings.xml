@@ -18,5 +18,6 @@
     <string name="aluminum">Aluminum</string>
     <string name="search_button_hint">Go</string>
     <string name="get_direction">Get direction</string>
+    <string name="accepts">This facility also accepts:</string>
 
 </resources>

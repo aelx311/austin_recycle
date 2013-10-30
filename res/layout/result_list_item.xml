@@ -13,6 +13,86 @@
         android:textSize="20sp"
         android:textStyle="bold" />
     
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp" >
+        
+        <ImageView
+            android:id="@+id/oil_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/oil"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/oil_filter_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/oil_filter"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/fluids_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/fluids"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/tires_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/tires"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/batteries_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/batteries"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/newspapers_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/newspapers"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/scrap_metal_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/scrap_metal"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+        <ImageView
+            android:id="@+id/aluminum_icon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/aluminum"
+            android:contentDescription="@string/none"
+            android:layout_margin="3dp"
+            android:visibility="gone" />
+        
+    </LinearLayout>
+    
     <TextView
         android:id="@+id/facility_address"
         android:layout_width="wrap_content"

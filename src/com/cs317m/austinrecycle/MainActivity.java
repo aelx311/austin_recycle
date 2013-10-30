@@ -21,23 +21,23 @@ import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
 	private static final String TAG = "MainActivity.java";
 	
 	private EditText _materialEditText;
-	private Button _searchButton;
+	private ImageButton _searchButton;
 	private AutoCompleteTextView _locationAutoCompleteTextView;
 	private ListView _listView;
 	private MaterialListAdapter _adapter;
@@ -57,6 +57,7 @@ public class MainActivity extends Activity {
 	private double _current_lat;
 	private double _current_long;
 	private ProgressDialog _progressDialog;
+	private PlacesTask _placesTask;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		 
-		_searchButton = (Button) this.findViewById(R.id.search_button);
+		_searchButton = (ImageButton) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -119,8 +120,8 @@ public class MainActivity extends Activity {
 		_locationAutoCompleteTextView.setThreshold(2);
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-            	PlacesTask placesTask = new PlacesTask();
-            	placesTask.execute(s.toString());	
+            	_placesTask = new PlacesTask();
+            	_placesTask.execute(s.toString());
             }
 
 			@Override
@@ -139,8 +140,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 //				String str = (String) adapterView.getItemAtPosition(position);
-				// TODO: create a special case for "Current location"
-				Log.d(TAG, "location clicked");
+				_placesTask.cancel(true);
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});
@@ -163,6 +163,7 @@ public class MainActivity extends Activity {
 		LayoutInflater inflater = this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
+		_listView.setBackground(null);
 		materialDialogBuilder.setView(popupLayout);
 		
 		// Dialog CANCEL button
@@ -205,7 +206,7 @@ public class MainActivity extends Activity {
 				// Remove clicked item from the adapter's data array and update
 				// => It gets removed from the dialog
 				_materialItemArray.remove(position);
-				_adapter.notifyDataSetChanged();		
+				_adapter.notifyDataSetChanged();
 				
 				// Format into comma separated string
 				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
@@ -260,7 +261,7 @@ public class MainActivity extends Activity {
      */
     private class PlacesTask extends AsyncTask<String, Void, ArrayList<String>>
     {
-        private static final String TAG = "LocationAutoCompleteAdapter.java";
+        private static final String TAG = "MainActivity.PlacesTask";
         private static final String PLACES_API_BASE = "https://maps.googleapis.com/maps/api/place";
         private static final String TYPE_AUTOCOMPLETE = "/autocomplete";
         private static final String OUT_JSON = "/json";
@@ -276,9 +277,11 @@ public class MainActivity extends Activity {
             try {
                 StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
                 sb.append("?sensor=true");
-                sb.append("&key=" + API_KEY);
                 sb.append("&components=country:us");
                 sb.append("&input=" + URLEncoder.encode(input[0], "utf8"));
+                sb.append("&country=austin");
+                sb.append("&types=geocode");
+                sb.append("&key=" + API_KEY);
                 
                 URL url = new URL(sb.toString());
                 conn = (HttpURLConnection) url.openConnection();
@@ -315,9 +318,11 @@ public class MainActivity extends Activity {
                 for (int i = 0; i < predsJsonArray.length(); i++) {
                     resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
                 }
-            } catch (JSONException e) {
+            }
+            catch (JSONException e) {
                 Log.e(TAG, "Cannot process JSON results", e);
             }
+            
             return resultList;
     	}
     	

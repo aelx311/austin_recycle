@@ -2,6 +2,9 @@ package com.cs317m.austinrecycle;
 
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,22 +43,38 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		if(convertView == null) {
 			LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = inflater.inflate(_layoutResourceId, parent, false);
+			convertView.setBackground(null);
 		}
 		_facility_name = (TextView) convertView.findViewById(R.id.facility_name);
 		_facility_address = (TextView) convertView.findViewById(R.id.facility_address);
 		
 		FacilityItem data = _item.get(position);
+		String addr_human = data.getAddrHuman();
 		
-		// Set alternating background color
-		if(position%2 == 0) {
-			convertView.setBackgroundColor(android.graphics.Color.LTGRAY);
+		try {
+			JSONObject address = new JSONObject(addr_human);
+			String addr = address.getString("address");
+	        String city = address.getString("city");
+	        String state = address.getString("state");
+	        String zip = address.getString("zip");
+
+	     // Set alternating background color
+			if(position%2 == 0) {
+				convertView.setBackgroundColor(android.graphics.Color.LTGRAY);
+			}
+			else {
+				convertView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+			}
+			
+			String textToDisplay = addr + ", " + city + ", " + state + ", " + zip + ".";
+			
+			_facility_name.setText((position+1) + ". " + data.getName());
+			_facility_address.setText(textToDisplay);
 		}
-		else {
-			convertView.setBackgroundColor(android.graphics.Color.TRANSPARENT);
+		catch (JSONException e) {
+			e.printStackTrace();
 		}
 		
-		_facility_name.setText((position+1) + ". " + data.getName());
-		_facility_address.setText(data.getAddrHuman());
 		return convertView;
 	}
 }

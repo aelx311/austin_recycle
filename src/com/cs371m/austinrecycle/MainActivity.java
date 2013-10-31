@@ -15,12 +15,15 @@ import org.json.JSONObject;
 
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo.State;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -62,6 +65,16 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		// Check if it is connecting to internet
+		ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		//mobile
+		State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+		//wifi
+		State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+		if(mobile.equals(State.DISCONNECTED) || mobile.equals(State.DISCONNECTING) || wifi.equals(State.DISCONNECTED) || wifi.equals(State.DISCONNECTING)) {
+			Log.d(TAG, "not connected to internet");
+		}
 		
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this);
@@ -300,11 +313,9 @@ public class MainActivity extends Activity {
             }
             catch (MalformedURLException e) {
                 Log.e(TAG, "Error processing Places API URL", e);
-                return resultList;
             }
             catch (IOException e) {
                 Log.e(TAG, "Error connecting to Places API", e);
-                return resultList;
             }
             finally {
                 if (conn != null) {

@@ -8,11 +8,8 @@ import org.json.JSONObject;
 
 import android.support.v4.app.FragmentActivity;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -78,7 +75,7 @@ public class FacilityDetailsActivity extends FragmentActivity {
 		_facility_lat = Double.valueOf(_data.getAddrLat());
 		_facility_long = Double.valueOf(_data.getAddrLong());
 		_facility_location = new LatLng(_facility_lat, _facility_long);
-		
+        
 		// Set up SupportMapFragment
 		_mapView = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
         _mapView.setMyLocationEnabled(true);
@@ -122,10 +119,8 @@ public class FacilityDetailsActivity extends FragmentActivity {
 		});
 		
 		// Bring up Google Maps to start navigating
-		final Uri direction = Uri.parse("http://maps.google.com/maps?saddr="+ _current_lat + ","
-																			+ _current_long +
-																	"&daddr="+ _data.getAddrLat() +","
-																			+_data.getAddrLong());
+		final Uri direction = Uri.parse("http://maps.google.com/maps?saddr="+ _current_lat + "," + _current_long +
+																									 "&daddr="+ _data.getAddrLat() +"," +_data.getAddrLong());
 		_directionButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -300,11 +300,9 @@ public class MainActivity extends Activity {
             }
             catch (MalformedURLException e) {
                 Log.e(TAG, "Error processing Places API URL", e);
-                return resultList;
             }
             catch (IOException e) {
                 Log.e(TAG, "Error connecting to Places API", e);
-                return resultList;
             }
             finally {
                 if (conn != null) {

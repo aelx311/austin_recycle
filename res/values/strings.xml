@@ -19,5 +19,9 @@
     <string name="search_button_hint">Go</string>
     <string name="get_direction">Get direction</string>
     <string name="accepts">This facility also accepts:</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>

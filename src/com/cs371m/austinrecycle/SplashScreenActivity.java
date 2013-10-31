@@ -4,6 +4,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -32,14 +33,21 @@ public class SplashScreenActivity extends Activity {
 				if(mobile.equals(State.DISCONNECTED) || mobile.equals(State.DISCONNECTING) || wifi.equals(State.DISCONNECTED) || wifi.equals(State.DISCONNECTING)) {
 					AlertDialog.Builder connectionDialogBuilder = new AlertDialog.Builder(SplashScreenActivity.this);
 					connectionDialogBuilder.setTitle("Connection error");
-					connectionDialogBuilder.setMessage("This app requires Internet connection. Please make sure you are connected to the Internet.");
-					connectionDialogBuilder.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+					connectionDialogBuilder.setMessage("This app requires Internet connection.\nPlease make sure you are connected to the Internet.");
+					connectionDialogBuilder.setNegativeButton("Try again", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							SplashScreenActivity.this.finish();
+							SplashScreenActivity.this.recreate();
 						}
 					});
-
+					connectionDialogBuilder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							startActivity(new Intent(Settings.ACTION_SETTINGS));
+							SplashScreenActivity.this.recreate();
+						}
+					});
+					
 					AlertDialog connectionDialog = connectionDialogBuilder.create();
 					connectionDialog.show();
 				}

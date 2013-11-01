@@ -14,13 +14,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -48,14 +57,19 @@ public class MainActivity extends Activity {
 	private ImageButton _searchButton;
 	private AutoCompleteTextView _locationAutoCompleteTextView;
 	private ListView _listView;
+	
 	private MaterialListAdapter _adapter;
 	private String[] _materialNames;
 	private TypedArray _icons;
 	private ArrayList<MaterialItem> _materialItemArray;
+	
 	private Geocoder _geocoder;
-	private double _current_lat;
-	private double _current_long;
+	private double _currentLat;
+	private double _currentLong;
+	private LocationManager _locationManager;
+	
 	private ProgressDialog _progressDialog;
+	
 	private PlacesTask _placesTask;
 	
 	@Override
@@ -65,7 +79,8 @@ public class MainActivity extends Activity {
 		
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this);
-
+		
+		// Setup _materialEditText to show MaterialDialog when clicked
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
 		_materialEditText.setInputType(InputType.TYPE_NULL);
 		_materialEditText.setOnClickListener(new OnClickListener() {
@@ -73,31 +88,31 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				_materialEditText.setText("");
 				_materialItemArray.clear();
-				popChooseMaterialDialog();
+				showMaterialDialog();
 			}
 		});
 		
+		// Setup actions when the search button is clicked
 		_searchButton = (ImageButton) this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				// Users must select at least ONE material
 				if(_materialEditText.getText().toString().equals("")) {
 					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
 				}
+				// If users leave the location blank, use GPS to find current location of the device
 				else if(_locationAutoCompleteTextView.getText().toString().equals("")) {
-					Toast.makeText(MainActivity.this, "Please enter a location", Toast.LENGTH_SHORT).show();
+					showLocationDialog();
 				}
 				else {
-					_progressDialog = new ProgressDialog(MainActivity.this);
-					_progressDialog.setTitle("Searching");
-					_progressDialog.setMessage("Searching for locations...");
-					_progressDialog.show();
+					showProgressDialog();
 					// Get the latitude and longitude of current location
 					try {
 						String currentAddress = _locationAutoCompleteTextView.getText().toString();
 						List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
-						_current_lat = returnedAddress.get(0).getLatitude();
-						_current_long = returnedAddress.get(0).getLongitude();
+						_currentLat = returnedAddress.get(0).getLatitude();
+						_currentLong = returnedAddress.get(0).getLongitude();
 					}
 					catch(IOException e) {
 						Log.e(TAG, "Error occured in Geocoder: ", e);
@@ -118,7 +133,6 @@ public class MainActivity extends Activity {
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextView.setThreshold(2);
-		
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             	_placesTask = new PlacesTask();
@@ -128,36 +142,34 @@ public class MainActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
+				
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
+				
 			}
 		});
 		
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//				String str = (String) adapterView.getItemAtPosition(position);
 				_placesTask.cancel(true);
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});
 	}
 	
-	/*
+	/**
 	 * Display list of materials
 	 * Selected materials will be removed from the list
 	 */
-	private void popChooseMaterialDialog() {
+	private void showMaterialDialog() {
 		Log.d(TAG, "entering popChooseMaterialDialog");
 		
-		// Create an Alert Dialog
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this);
-		
-		// Set title of Alert Dialog
 		materialDialogBuilder.setTitle("Please select materials");
 		
 		// Set the view of Alert Dialog to custom ListView
@@ -190,7 +202,7 @@ public class MainActivity extends Activity {
 
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
-			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
+			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i]));
 		}
 		_icons.recycle();
 		
@@ -214,10 +226,119 @@ public class MainActivity extends Activity {
 				_materialEditText.setText(newString);
 			}
 		});
-		
-		// Display dialog
+
 		final AlertDialog materialListDialog = materialDialogBuilder.create();
 		materialListDialog.show();
+	}
+	
+	/**
+	 * Check GPS status
+	 * @return true if GPS is on
+	 * @return false if GPS is off
+	 */
+	private boolean checkGpsStatus() {
+		ContentResolver contentResolver = this.getBaseContext().getContentResolver();
+		boolean gpsStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
+		return gpsStatus;
+	}
+	
+	/**
+	 * Get current location using GPS and display the address to _locationAutoCompleteTextView
+	 */
+	private void getCurrentLocation() {
+		_locationManager = (LocationManager) MainActivity.this.getSystemService(LOCATION_SERVICE);
+		Criteria criteria = new Criteria();
+		String best = _locationManager.getBestProvider(criteria, true);
+		Location location = _locationManager.getLastKnownLocation(best);
+		_currentLat = location.getLatitude();
+		_currentLong = location.getLongitude();
+		
+		try {
+			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
+			Address currentAddress = returnedAddress.get(0);
+			_locationAutoCompleteTextView.setText(currentAddress.getAddressLine(0) + ", "
+																	+ currentAddress.getAddressLine(1) + ", "
+																	+ currentAddress.getAddressLine(2));
+		}
+		catch (IOException e) {
+			Log.e(TAG, "Error getting current location", e);
+		}
+	}
+	
+	/**
+	 * Build locationDialog
+	 */
+	private void showLocationDialog() {
+		final AlertDialog.Builder locationDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+		locationDialogBuilder.setTitle("Use current location");
+		locationDialogBuilder.setMessage("You did not enter an address. Would you like to use your current location?");
+		locationDialogBuilder.setNegativeButton("No", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		locationDialogBuilder.setPositiveButton("Yes", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if(checkGpsStatus()) {
+					MainActivity.this.getCurrentLocation();
+				}
+				else {
+					dialog.dismiss();
+					showGpsDialog();
+				}
+			}
+		});
+		
+		final AlertDialog locationDialog = locationDialogBuilder.create();
+		locationDialog.show();
+	}
+	
+	/**
+	 * Build GPS Settings dialog
+	 */
+	private void showGpsDialog() {
+		final AlertDialog.Builder gpsDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+		gpsDialogBuilder.setTitle("Turn on GPS");
+		gpsDialogBuilder.setMessage("Please turn on your GPS and try again.");
+		gpsDialogBuilder.setNegativeButton("Try again", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		gpsDialogBuilder.setPositiveButton("Go to Settings", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Log.d(TAG, "GPS Settings");
+				startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+				MainActivity.this.recreate();
+			}
+		});
+		final AlertDialog gpsDialog = gpsDialogBuilder.create();
+		gpsDialog.show();
+	}
+	
+	/**
+	 * Build progress dialog
+	 * Display when searching for facilities
+	 */
+	private void showProgressDialog() {
+		_progressDialog = new ProgressDialog(MainActivity.this);
+		_progressDialog.setTitle("Searching");
+		_progressDialog.setMessage("Searching for locations...");
+		_progressDialog.show();
+	}
+		
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
 	}
 	
 	@Override
@@ -239,7 +360,7 @@ public class MainActivity extends Activity {
     	@Override
         protected ArrayList<FacilityItem> doInBackground(String... materials) {
     		Log.d(TAG, "begin doInBackground");
-            Model m = new Model(_current_lat, _current_long);
+            Model m = new Model(_currentLat, _currentLong);
             Log.d(TAG, "end doInBackground");
             return m.getFacilities(materials);
         }
@@ -255,8 +376,8 @@ public class MainActivity extends Activity {
         	// Starting the ResultListActivity
         	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
-        	resultIntent.putExtra("CURRENT_LAT", _current_lat);
-        	resultIntent.putExtra("CURRENT_LONG", _current_long);
+        	resultIntent.putExtra("CURRENT_LAT", _currentLat);
+        	resultIntent.putExtra("CURRENT_LONG", _currentLong);
 			MainActivity.this.startActivity(resultIntent);
 			Log.d(TAG, "end onPostExecute");
         }

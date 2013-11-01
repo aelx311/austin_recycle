@@ -15,10 +15,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 public class FacilityDetailsActivity extends FragmentActivity {
@@ -39,6 +41,8 @@ public class FacilityDetailsActivity extends FragmentActivity {
 	private TextView _facilityAddress;
 	private GoogleMap _mapView;
 	private ImageView _icon;
+	private ImageView _transparentImage;
+	private ScrollView _scrollView;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +79,39 @@ public class FacilityDetailsActivity extends FragmentActivity {
 		_facility_lat = Double.valueOf(_data.getAddrLat());
 		_facility_long = Double.valueOf(_data.getAddrLong());
 		_facility_location = new LatLng(_facility_lat, _facility_long);
+		
+		// Workaround to disable the touch event of ScrollView
+		_scrollView = (ScrollView) this.findViewById(R.id.scroll_view);
+		_transparentImage = (ImageView) this.findViewById(R.id.transparent_image);
+		_transparentImage.setOnTouchListener(new View.OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				int action = event.getAction();
+				switch(action) {
+				case MotionEvent.ACTION_DOWN:
+	                // Disallow ScrollView to intercept touch events.
+					_scrollView.requestDisallowInterceptTouchEvent(true);
+	                // Disable touch on transparent view
+	                return false;
+
+	           case MotionEvent.ACTION_UP:
+	                // Allow ScrollView to intercept touch events.
+	        	   _scrollView.requestDisallowInterceptTouchEvent(false);
+	                return true;
+
+	           case MotionEvent.ACTION_MOVE:
+	        	   _scrollView.requestDisallowInterceptTouchEvent(true);
+	                return false;
+
+	           default: 
+	                return true;
+				}
+			}
+		});
         
 		// Set up SupportMapFragment
 		_mapView = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
-        _mapView.setMyLocationEnabled(true);
+		_mapView.setMyLocationEnabled(true);
         _mapView.moveCamera(CameraUpdateFactory.newLatLngZoom(_facility_location, 19));
         _mapView.addMarker(new MarkerOptions().title(_data.getName()).position(_facility_location));
 		

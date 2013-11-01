@@ -22,14 +22,11 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.os.PowerManager;
-import android.os.PowerManager.WakeLock;
 import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -248,7 +245,33 @@ public class MainActivity extends Activity {
 	private void getCurrentLocation() {
 		_locationManager = (LocationManager) MainActivity.this.getSystemService(LOCATION_SERVICE);
 		Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		criteria.setPowerRequirement(Criteria.POWER_HIGH);
 		String best = _locationManager.getBestProvider(criteria, true);
+		_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
+			@Override
+			public void onLocationChanged(Location location) {
+				Log.d(TAG, "onLocationChanged");
+				_currentLat = location.getLatitude();
+				_currentLong = location.getLongitude();
+			}
+
+			@Override
+			public void onProviderDisabled(String provider) {
+				Log.d(TAG, "onProviderDisabled");
+			}
+
+			@Override
+			public void onProviderEnabled(String provider) {
+				Log.d(TAG, "onProviderEnabled");
+			}
+
+			@Override
+			public void onStatusChanged(String provider, int status, Bundle extras) {
+				Log.d(TAG, "onStatusChanged");
+			}
+		});
+		
 		Location location = _locationManager.getLastKnownLocation(best);
 		_currentLat = location.getLatitude();
 		_currentLong = location.getLongitude();

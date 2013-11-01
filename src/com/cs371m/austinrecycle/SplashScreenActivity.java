@@ -30,19 +30,23 @@ public class SplashScreenActivity extends Activity {
 				ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
 				State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-				if(mobile.equals(State.DISCONNECTED) || mobile.equals(State.DISCONNECTING) || wifi.equals(State.DISCONNECTED) || wifi.equals(State.DISCONNECTING)) {
+				if(mobile.equals(State.DISCONNECTED) || mobile.equals(State.DISCONNECTING)
+						|| wifi.equals(State.DISCONNECTED) || wifi.equals(State.DISCONNECTING)) {
 					AlertDialog.Builder connectionDialogBuilder = new AlertDialog.Builder(SplashScreenActivity.this);
 					connectionDialogBuilder.setTitle("Connection error");
-					connectionDialogBuilder.setMessage("This app requires Internet connection.\nPlease make sure you are connected to the Internet.");
+					connectionDialogBuilder.setMessage(	"This app requires Internet connection.\n" +
+																				"Please make sure you are connected to the Internet.");
 					connectionDialogBuilder.setNegativeButton("Try again", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							Log.d(TAG, "Try again");
 							SplashScreenActivity.this.recreate();
 						}
 					});
-					connectionDialogBuilder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+					connectionDialogBuilder.setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							Log.d(TAG, "Settings");
 							startActivity(new Intent(Settings.ACTION_SETTINGS));
 							SplashScreenActivity.this.recreate();
 						}
@@ -52,6 +56,7 @@ public class SplashScreenActivity extends Activity {
 					connectionDialog.show();
 				}
 				else {
+					Log.d(TAG, "Connected to internet");
 					Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
 					SplashScreenActivity.this.startActivity(intent);
 					SplashScreenActivity.this.finish();

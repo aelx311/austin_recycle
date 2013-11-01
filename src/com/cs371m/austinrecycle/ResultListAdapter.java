@@ -21,9 +21,11 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 	private Context _context;
 	private int _layoutResourceId;
 	private ArrayList<FacilityItem> _item;
-	private HashMap<String, Integer> _materialIcons;
+	private HashMap<String, Integer> _materialIcons; // A hashmap to lookup material icon IDs from strings
 	private FacilityItem _data;
 	
+	// For creating efficient references to View objects - ViewHolder pattern
+	// Goal: Reduce calls to findViewById()
 	static class ViewHolder {
 		public TextView _facility_name;
 		public TextView _facility_address;
@@ -35,6 +37,7 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		_context = context;
 		_layoutResourceId = layoutResourceId;
 		_item = item;
+		
 		_materialIcons = new HashMap<String, Integer>();
 		_materialIcons.put("oil", R.id.oil_icon);
 		_materialIcons.put("oil_filter", R.id.oil_filter_icon);
@@ -53,10 +56,13 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 //    	Log.d(TAG, "END PRINTING _facilitiesItem");
 	}
 	
+	// Need to override getView to display something more complicated than a TextView
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Log.d(TAG, "in getView");
+		// Re-populate already-allocated views if possible for efficiency
 		View rowView = convertView;
+		// If no View obj to reuse, allocate one and assign it ViewHolder reference
 		if(rowView == null) {
 			LayoutInflater inflater = (LayoutInflater) _context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			rowView = inflater.inflate(_layoutResourceId, parent, false);
@@ -67,11 +73,13 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 			rowView.setTag(viewHolder);
 		}
 		
+		// Get data to populate the View object
 		ViewHolder holder = (ViewHolder) rowView.getTag();
 		_data = _item.get(position);
 		String addr_human = _data.getAddrHuman();
 		ArrayList<String> accepts = _data.getAccepts();
 		
+		// Re-format the address string into something prettier
 		try {
 			JSONObject address = new JSONObject(addr_human);
 			String addr = address.getString("address");
@@ -88,6 +96,7 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 			e.printStackTrace();
 		}
 		
+		// Add appropriate material ImageViews to this facility's view
 		for(String iconKey : accepts) {
 			int iconId = _materialIcons.get(iconKey);
 			if(_materialIcons.containsKey(iconKey)) {

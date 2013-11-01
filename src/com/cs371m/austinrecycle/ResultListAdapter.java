@@ -21,7 +21,7 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 	private Context _context;
 	private int _layoutResourceId;
 	private ArrayList<FacilityItem> _item;
-	private HashMap<String, Integer> _materialIcons; // A hashmap to lookup material icon IDs from strings
+	private HashMap<String, Integer> _materialIcons; // To lookup material icon IDs from strings
 	private FacilityItem _data;
 	
 	// For creating efficient references to View objects - ViewHolder pattern

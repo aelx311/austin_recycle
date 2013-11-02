@@ -107,6 +107,7 @@ public class MainActivity extends Activity {
 				}
 				else {
 					showProgressDialog();
+
 					// Get the latitude and longitude of current location
 					try {
 						String currentAddress = _locationAutoCompleteTextView.getText().toString();
@@ -349,8 +350,8 @@ public class MainActivity extends Activity {
 	}
 	
     /**
-     * Class to run HTTP network requests in a worker thread. Necessary to
-     * keep the UI interactive.
+     * Asynchronously query the facilities Socrata database. Launches the ResultList
+     * activity on completion.
      * 
      * Types specified are <Argument Type, Progress Update Type, Return Type>
      */
@@ -396,6 +397,7 @@ public class MainActivity extends Activity {
         protected ArrayList<String> doInBackground(String... input) {
 			Log.d(TAG, "Async PlacesTask doInBackground(): ");
 
+			// Form an HTTP request, make it, and get the response
     		ArrayList<String> resultList = null;
             HttpURLConnection conn = null;
             StringBuilder jsonResults = new StringBuilder();
@@ -431,6 +433,7 @@ public class MainActivity extends Activity {
                 }
             }
 
+            // Parse the response
             try {
                 // Create a JSON object hierarchy from the results
                 JSONObject jsonObj = new JSONObject(jsonResults.toString());
@@ -449,6 +452,7 @@ public class MainActivity extends Activity {
             return resultList;
     	}
     	
+        // Reset the Location suggestion list with new results from google
     	protected void onPostExecute(ArrayList<String> resultList) {
     		Log.d(TAG, "Async PlacesTask onPostExecute(): ");
     		LocationAutoCompleteAdapter locAdapter = new LocationAutoCompleteAdapter(MainActivity.this, R.layout.location_list_item, resultList);

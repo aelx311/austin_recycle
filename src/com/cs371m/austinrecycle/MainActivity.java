@@ -118,12 +118,14 @@ public class MainActivity extends Activity {
 					catch(IOException e) {
 						Log.e(TAG, "Error occured in Geocoder: ", e);
 					}
-					
-					// SelectedMaterial is converted to lower case and replaced whitespace with underscore to match the database field name
-					String selectedMaterial = _materialEditText.getText().toString().toLowerCase().replace(' ', '_');
-					
+	
 					// Convert to String array to pass as parameter
-					String[] selectedMaterialArray = selectedMaterial.split(",");
+					String[] selectedMaterialArray = _materialEditText.getText().toString().split(",");
+					// Trim spaces, and format material names to their database attribute names
+					for(int i = 0; i < selectedMaterialArray.length; ++i)
+					{
+						selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
+					}
 					
 					// Needs to create a new task every time
 					new NetworkRequestTask().execute(selectedMaterialArray);	
@@ -223,7 +225,7 @@ public class MainActivity extends Activity {
 				_adapter.notifyDataSetChanged();
 				
 				// Format into comma separated string
-				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+				String newString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				_materialEditText.setText(newString);
 			}
 		});

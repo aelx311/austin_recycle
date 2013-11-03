@@ -1,0 +1,64 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity"
+    android:orientation="vertical" >
+    
+    <TextView
+        android:id="@+id/materials_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/materials_label"
+        android:textColorHint="@color/Black"
+        android:textSize="22sp" />
+    
+    <EditText
+        android:id="@+id/materials_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/materials_hint"
+        android:cursorVisible="false"
+        android:clickable="true"
+        android:maxLines="2"
+        android:textSize="12sp" />
+        
+    <TextView
+        android:id="@+id/location_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/location_label"
+        android:textSize="22sp" />
+    
+    <AutoCompleteTextView
+        android:id="@+id/location_autoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/location_hint"
+        android:imeOptions="flagNoExtractUi"
+        android:maxLines="2"
+        android:textSize="12sp" />
+        
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <ImageButton
+            android:id="@+id/search_button"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/search_button"
+            android:contentDescription="@string/none" />
+
+    </RelativeLayout>
+    
+</LinearLayout>

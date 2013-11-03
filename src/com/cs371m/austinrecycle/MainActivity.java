@@ -65,9 +65,13 @@ public class MainActivity extends Activity {
 	private LocationManager _locationManager;
 	
 	private ProgressDialog _progressDialog;
+	private AlertDialog _materialListDialog;
 	
 	private PlacesTask _placesTask;
 	
+	/**
+	 * onCreate
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -77,7 +81,7 @@ public class MainActivity extends Activity {
 		_geocoder = new Geocoder(this);
 		
 		// Setup _materialEditText to show MaterialDialog when clicked
-		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
+		_materialEditText = (EditText) MainActivity.this.findViewById(R.id.materials_editText);
 		_materialEditText.setKeyListener(null);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
@@ -89,7 +93,7 @@ public class MainActivity extends Activity {
 		});
 		
 		// Setup actions when the search button is clicked
-		_searchButton = (ImageButton) this.findViewById(R.id.search_button);
+		_searchButton = (ImageButton) MainActivity.this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -127,7 +131,7 @@ public class MainActivity extends Activity {
 		});
 		
 		// Location AutoComplete using suggestions from Google Location API
-		_locationAutoCompleteTextView = (AutoCompleteTextView) this.findViewById(R.id.location_autoCompleteTextView);
+		_locationAutoCompleteTextView = (AutoCompleteTextView) MainActivity.this.findViewById(R.id.location_autoCompleteTextView);
 		_locationAutoCompleteTextView.setThreshold(2);
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -159,6 +163,57 @@ public class MainActivity extends Activity {
 	}
 	
 	/**
+	 * onResume() is called after onCreate()
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	/**
+	 * onStop() will be called when the orientation is changed
+	 */
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.d(TAG, "onStop");
+		if(_materialListDialog != null) {
+			_materialListDialog.dismiss();
+		}
+		if(_progressDialog != null) {
+			_progressDialog.dismiss();
+		}
+		if(_placesTask == null) {
+			_placesTask = new PlacesTask();
+		}
+	}
+	
+	/**
+	 * onPause
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+//		Log.d(TAG, "onPause");
+//		if(_materialListDialog != null) {
+//			_materialListDialog.dismiss();
+//		}
+//		if(_progressDialog != null) {
+//			_progressDialog.dismiss();
+//		}
+//		if(_placesTask == null || _placesTask.isCancelled()) {
+//			_placesTask = new PlacesTask();
+//		}
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	
+	/**
 	 * Display list of materials
 	 * Selected materials will be removed from the list
 	 */
@@ -169,7 +224,7 @@ public class MainActivity extends Activity {
 		materialDialogBuilder.setTitle("Please select materials");
 		
 		// Set the view of Alert Dialog to custom ListView
-		LayoutInflater inflater = this.getLayoutInflater();
+		LayoutInflater inflater = MainActivity.this.getLayoutInflater();
 		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
 		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
 		_listView.setBackgroundColor(Color.WHITE);
@@ -193,8 +248,8 @@ public class MainActivity extends Activity {
 		});
 		
 		// Read material names and icons from arrays.xml
-		_materialNames = this.getResources().getStringArray(R.array.list_material_name);
-		_icons = this.getResources().obtainTypedArray(R.array.list_material_icon);
+		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
 
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
@@ -223,8 +278,8 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		final AlertDialog materialListDialog = materialDialogBuilder.create();
-		materialListDialog.show();
+		_materialListDialog = materialDialogBuilder.create();
+		_materialListDialog.show();
 	}
 	
 	/**
@@ -233,7 +288,7 @@ public class MainActivity extends Activity {
 	 * @return false if GPS is off
 	 */
 	private boolean checkGpsStatus() {
-		ContentResolver contentResolver = this.getBaseContext().getContentResolver();
+		ContentResolver contentResolver = MainActivity.this.getBaseContext().getContentResolver();
 		boolean gpsStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
 		return gpsStatus;
 	}
@@ -351,23 +406,6 @@ public class MainActivity extends Activity {
 		_progressDialog.setTitle("Searching");
 		_progressDialog.setMessage("Searching for locations...");
 		_progressDialog.show();
-	}
-		
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
 	}
 	
     /**

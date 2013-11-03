@@ -30,8 +30,8 @@ public class SplashScreenActivity extends Activity {
 				ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
 				State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-				if(mobile.equals(State.DISCONNECTED) || mobile.equals(State.DISCONNECTING)
-						|| wifi.equals(State.DISCONNECTED) || wifi.equals(State.DISCONNECTING)) {
+				if(mobile.equals(State.DISCONNECTED) && mobile.equals(State.DISCONNECTING)
+						&& wifi.equals(State.DISCONNECTED) && wifi.equals(State.DISCONNECTING)) {
 					AlertDialog.Builder connectionDialogBuilder = new AlertDialog.Builder(SplashScreenActivity.this);
 					connectionDialogBuilder.setTitle("Connection error");
 					connectionDialogBuilder.setMessage(	"This app requires Internet connection.\n" +

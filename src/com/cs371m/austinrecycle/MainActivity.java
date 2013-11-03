@@ -32,7 +32,6 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,7 +78,7 @@ public class MainActivity extends Activity {
 		
 		// Setup _materialEditText to show MaterialDialog when clicked
 		_materialEditText = (EditText) this.findViewById(R.id.materials_editText);
-		_materialEditText.setInputType(InputType.TYPE_NULL);
+		_materialEditText.setKeyListener(null);
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

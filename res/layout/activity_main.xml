@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/materials_label"
         android:textColorHint="@color/Black"
-        android:textSize="35sp" />
+        android:textSize="30sp" />
     
     <EditText
         android:id="@+id/materials_editText"
@@ -23,15 +23,16 @@
         android:layout_height="wrap_content"
         android:hint="@string/materials_hint"
         android:cursorVisible="false"
-        android:clickable="true" />
+        android:clickable="true"
+        android:maxLines="2" />
         
     <TextView
         android:id="@+id/location_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:text="@string/location_label"
-        android:textSize="35sp" />
+        android:textSize="30sp" />
     
     <AutoCompleteTextView
         android:id="@+id/location_autoCompleteTextView"

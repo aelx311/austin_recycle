@@ -123,18 +123,8 @@ public class MainActivity extends Activity {
 					// Convert to String array to pass as parameter
 					String[] selectedMaterialArray = selectedMaterial.split(",");
 
-=======
-	
-					// Convert to String array to pass as parameter
-					String[] selectedMaterialArray = _materialEditText.getText().toString().split(",");
-					// Trim spaces, and format material names to their database attribute names
-					for(int i = 0; i < selectedMaterialArray.length; ++i)
-					{
-						selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
-					}
-					
 					// Needs to create a new task every time
-					new NetworkRequestTask().execute(selectedMaterialArray);	
+					new NetworkRequestTask().execute(selectedMaterialArray);
 				}
 			}
 		});
@@ -151,14 +141,12 @@ public class MainActivity extends Activity {
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
 				// TODO Auto-generated method stub
-
 			}
 		});
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -405,17 +393,17 @@ public class MainActivity extends Activity {
 		_progressDialog = new ProgressDialog(MainActivity.this);
 		_progressDialog.setTitle("Searching");
 		_progressDialog.setMessage("Searching for locations...");
-        _progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        _progressDialog.show();
+		_progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		_progressDialog.show();
 	}
 
 	/**
-	 * Class to run HTTP network requests in a worker thread. Necessary to
-	 * keep the UI interactive.
+	 * Asynchronously query the facilities Socrata database. Launches the ResultList
+	 * activity on completion.
 	 * 
 	 * Types specified are <Argument Type, Progress Update Type, Return Type>
 	 */
-	private class NetworkRequestTask extends AsyncTask<String, Float, ArrayList<FacilityItem>> {
+	private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
 		private static final String TAG = "MainActivity.NetworkRequestTask";
 
 		@Override
@@ -425,59 +413,12 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "end doInBackground");
 			return m.getFacilities(materials);
 		}
-		
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-	
-    /**
-     * Asynchronously query the facilities Socrata database. Launches the ResultList
-     * activity on completion.
-     * 
-     * Types specified are <Argument Type, Progress Update Type, Return Type>
-     */
-    private class NetworkRequestTask extends AsyncTask<String, Integer, ArrayList<FacilityItem>> {
-    	private static final String TAG = "MainActivity.NetworkRequestTask";
-    	
-    	@Override
-        protected ArrayList<FacilityItem> doInBackground(String... materials) {
-    		Log.d(TAG, "begin doInBackground");
-            Model m = new Model(_currentLat, _currentLong);
-            Log.d(TAG, "end doInBackground");
-            return m.getFacilities(materials);
-        }
-        
-        /** 
-         * Invoked in asynchronously in MainActivity when the network request 
-         * has finished and doInBackground returns its result.
-         */
-    	@Override
-        protected void onPostExecute(ArrayList<FacilityItem> facilities) {
-    		Log.d(TAG, "begin onPostExecute");
-    		_progressDialog.dismiss();
-        	// Starting the ResultListActivity
-        	Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
-        	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
-        	resultIntent.putExtra("CURRENT_LAT", _currentLat);
-        	resultIntent.putExtra("CURRENT_LONG", _currentLong);
-		 @Override
-		    protected void onPreExecute() {
-				showProgressDialog();
-		    }
-		 
+
+		@Override
+		protected void onPreExecute() {
+			showProgressDialog();
+		}
+
 		/** 
 		 * Invoked in asynchronously in MainActivity when the network request 
 		 * has finished and doInBackground returns its result.
@@ -510,68 +451,6 @@ public class MainActivity extends Activity {
 			Log.d(TAG, "Async PlacesTask doInBackground(): ");
 
 			// Form an HTTP request, make it, and get the response
-    		ArrayList<String> resultList = null;
-            HttpURLConnection conn = null;
-            StringBuilder jsonResults = new StringBuilder();
-            try {
-                StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-                sb.append("?sensor=true");
-                sb.append("&components=country:us");
-                sb.append("&input=" + URLEncoder.encode(input[0], "utf8"));
-                sb.append("&country=austin");
-                sb.append("&types=geocode");
-                sb.append("&key=" + API_KEY);
-                
-                URL url = new URL(sb.toString());
-                conn = (HttpURLConnection) url.openConnection();
-                InputStreamReader in = new InputStreamReader(conn.getInputStream());
-                
-                // Load the results into a StringBuilder
-                int read;
-                char[] buff = new char[1024];
-                while ((read = in.read(buff)) != -1) {
-                    jsonResults.append(buff, 0, read);
-                }
-            }
-            catch (MalformedURLException e) {
-                Log.e(TAG, "Error processing Places API URL", e);
-            }
-            catch (IOException e) {
-                Log.e(TAG, "Error connecting to Places API", e);
-            }
-            finally {
-                if (conn != null) {
-                    conn.disconnect();
-                }
-            }
-
-            // Parse the response
-            try {
-                // Create a JSON object hierarchy from the results
-                JSONObject jsonObj = new JSONObject(jsonResults.toString());
-                JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
-                
-                // Extract the Place descriptions from the results
-                resultList = new ArrayList<String>(predsJsonArray.length());
-                for (int i = 0; i < predsJsonArray.length(); i++) {
-                    resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
-                }
-            }
-            catch (JSONException e) {
-                Log.e(TAG, "Cannot process JSON results", e);
-            }
-            
-            return resultList;
-    	}
-    	
-        // Reset the Location suggestion list with new results from google
-    	protected void onPostExecute(ArrayList<String> resultList) {
-    		Log.d(TAG, "Async PlacesTask onPostExecute(): ");
-    		LocationAutoCompleteAdapter locAdapter = new LocationAutoCompleteAdapter(MainActivity.this, R.layout.location_list_item, resultList);
-    		_locationAutoCompleteTextView.setAdapter(locAdapter);
-    		_locationAutoCompleteTextView.showDropDown();
-    	}
-    }
 			ArrayList<String> resultList = null;
 			HttpURLConnection conn = null;
 			StringBuilder jsonResults = new StringBuilder();
@@ -607,6 +486,7 @@ public class MainActivity extends Activity {
 				}
 			}
 
+			// Parse the response
 			try {
 				// Create a JSON object hierarchy from the results
 				JSONObject jsonObj = new JSONObject(jsonResults.toString());
@@ -625,6 +505,7 @@ public class MainActivity extends Activity {
 			return resultList;
 		}
 
+		// Reset the Location suggestion list with new results from google
 		protected void onPostExecute(ArrayList<String> resultList) {
 			Log.d(TAG, "Async PlacesTask onPostExecute(): ");
 			LocationAutoCompleteAdapter locAdapter = new LocationAutoCompleteAdapter(MainActivity.this, R.layout.location_list_item, resultList);

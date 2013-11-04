@@ -19,4 +19,14 @@
         android:hint="@string/materials_hint"
         android:layout_marginLeft="5dp"
         android:padding="3dp" />
+    
+    <!-- 
+    <CheckBox
+        android:id="@+id/material_checkbox"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_toRightOf="@id/material_name"
+        android:checked="false"
+        android:padding="3dp" />
+         -->
 </RelativeLayout>

@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:text="@string/materials_label"
         android:textColorHint="@color/Black"
-        android:textSize="30sp" />
+        android:textSize="22sp" />
     
     <EditText
         android:id="@+id/materials_editText"
@@ -24,23 +24,25 @@
         android:hint="@string/materials_hint"
         android:cursorVisible="false"
         android:clickable="true"
-        android:maxLines="2" />
+        android:maxLines="2"
+        android:textSize="12sp" />
         
     <TextView
         android:id="@+id/location_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:text="@string/location_label"
-        android:textSize="30sp" />
+        android:textSize="22sp" />
     
     <AutoCompleteTextView
         android:id="@+id/location_autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/location_hint"
-        android:inputType="textMultiLine"
-        android:maxLines="2" />
+        android:imeOptions="flagNoExtractUi"
+        android:maxLines="2"
+        android:textSize="12sp" />
         
     <RelativeLayout
         android:layout_width="match_parent"

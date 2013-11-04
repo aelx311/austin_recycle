@@ -216,7 +216,8 @@ public class MainActivity extends Activity {
 	private void showAbout() {
 		AlertDialog.Builder aboutDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 		aboutDialogBuilder.setTitle("About Austin Recycling");
-		aboutDialogBuilder.setMessage("About the app...\nblah...blah...blah");
+		aboutDialogBuilder.setMessage("Developed by: David, Mike and Alex\n\nAdvised by: Mike Scott\n\nMost location related features are powered by Google.");
+		aboutDialogBuilder.setNeutralButton("Done", null);
 		
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();

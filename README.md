@@ -1,5 +1,17 @@
 austin_recycle
 ==============
+Problem:
+--------
+You have dead batteries, scrap metal, and 
+other strange materials to dispose of. You know you 
+shouldn't throw them in the landfill, but you don't know 
+where to take them.
+
+Solution:
+---------
+The Austin Recycling App will inform users of 
+the closest recycling facility that can handle their 
+materials.
 
 Team members:
 --------------

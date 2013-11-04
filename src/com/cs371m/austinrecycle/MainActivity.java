@@ -106,11 +106,6 @@ public class MainActivity extends Activity {
 					showLocationDialog();
 				}
 				else {
-<<<<<<< HEAD
-					showProgressDialog();
-
-=======
->>>>>>> e792ae1b262a3e25b69c107d76a9791970b986a3
 					// Get the latitude and longitude of current location
 					try {
 						String currentAddress = _locationAutoCompleteTextView.getText().toString();
@@ -128,6 +123,16 @@ public class MainActivity extends Activity {
 					// Convert to String array to pass as parameter
 					String[] selectedMaterialArray = selectedMaterial.split(",");
 
+=======
+	
+					// Convert to String array to pass as parameter
+					String[] selectedMaterialArray = _materialEditText.getText().toString().split(",");
+					// Trim spaces, and format material names to their database attribute names
+					for(int i = 0; i < selectedMaterialArray.length; ++i)
+					{
+						selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
+					}
+					
 					// Needs to create a new task every time
 					new NetworkRequestTask().execute(selectedMaterialArray);	
 				}
@@ -268,7 +273,7 @@ public class MainActivity extends Activity {
 				_adapter.notifyDataSetChanged();
 
 				// Format into comma separated string
-				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+				String newString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				_materialEditText.setText(newString);
 			}
 		});
@@ -421,7 +426,6 @@ public class MainActivity extends Activity {
 			return m.getFacilities(materials);
 		}
 		
-<<<<<<< HEAD
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -469,7 +473,6 @@ public class MainActivity extends Activity {
         	resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
         	resultIntent.putExtra("CURRENT_LAT", _currentLat);
         	resultIntent.putExtra("CURRENT_LONG", _currentLong);
-=======
 		 @Override
 		    protected void onPreExecute() {
 				showProgressDialog();
@@ -488,7 +491,6 @@ public class MainActivity extends Activity {
 			resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
 			resultIntent.putExtra("CURRENT_LAT", _currentLat);
 			resultIntent.putExtra("CURRENT_LONG", _currentLong);
->>>>>>> e792ae1b262a3e25b69c107d76a9791970b986a3
 			MainActivity.this.startActivity(resultIntent);
 			Log.d(TAG, "end onPostExecute");
 		}
@@ -507,7 +509,6 @@ public class MainActivity extends Activity {
 		protected ArrayList<String> doInBackground(String... input) {
 			Log.d(TAG, "Async PlacesTask doInBackground(): ");
 
-<<<<<<< HEAD
 			// Form an HTTP request, make it, and get the response
     		ArrayList<String> resultList = null;
             HttpURLConnection conn = null;
@@ -571,7 +572,6 @@ public class MainActivity extends Activity {
     		_locationAutoCompleteTextView.showDropDown();
     	}
     }
-=======
 			ArrayList<String> resultList = null;
 			HttpURLConnection conn = null;
 			StringBuilder jsonResults = new StringBuilder();
@@ -632,5 +632,4 @@ public class MainActivity extends Activity {
 			_locationAutoCompleteTextView.showDropDown();
 		}
 	}
->>>>>>> e792ae1b262a3e25b69c107d76a9791970b986a3
 }

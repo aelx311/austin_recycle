@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
-import android.view.Menu;
 
 public class SplashScreenActivity extends Activity {
 
@@ -30,8 +29,13 @@ public class SplashScreenActivity extends Activity {
 				ConnectivityManager conMan = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 				State mobile = conMan.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
 				State wifi = conMan.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-				if(mobile.equals(State.DISCONNECTED) && mobile.equals(State.DISCONNECTING)
-						&& wifi.equals(State.DISCONNECTED) && wifi.equals(State.DISCONNECTING)) {
+				
+				Log.d(TAG, "mobile state: " + mobile.name());
+				Log.d(TAG, "wifi state: " + wifi.name());
+				
+				if(mobile.equals(State.DISCONNECTED) && wifi.equals(State.DISCONNECTED)
+//						&& mobile.equals(State.UNKNOWN) && wifi.equals(State.UNKNOWN)
+						) {
 					AlertDialog.Builder connectionDialogBuilder = new AlertDialog.Builder(SplashScreenActivity.this);
 					connectionDialogBuilder.setTitle("Connection error");
 					connectionDialogBuilder.setMessage(	"This app requires Internet connection.\n" +
@@ -63,12 +67,5 @@ public class SplashScreenActivity extends Activity {
 				}
 			}
 		}, TIME_OUT);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.splash_screen, menu);
-		return true;
 	}
 }

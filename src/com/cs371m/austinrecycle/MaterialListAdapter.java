@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+//import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	static class ViewHolder {
 		public ImageView _icon;
 		public TextView _name;
+//		public CheckBox _checked;
 	}
 	
 	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> itemArray) {
@@ -42,6 +44,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder._icon = (ImageView) rowView.findViewById(R.id.material_icon);
 			viewHolder._name = (TextView) rowView.findViewById(R.id.material_name);
+//			viewHolder._checked = (CheckBox) rowView.findViewById(R.id.material_checkbox);
 			rowView.setTag(viewHolder);
 		}
 		
@@ -51,6 +54,8 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 		Log.d(TAG, "icon: " + _data.getIcon());
 		holder._name.setText(_data.getName());
 		Log.d(TAG, "name: " + _data.getName());
+//		holder._checked.setChecked(_data.getChecked());
+//		Log.d(TAG, "checked: " + _data.getChecked());
 		
 		Log.d(TAG, "end MaterialListAdapter getView");
 		return rowView;

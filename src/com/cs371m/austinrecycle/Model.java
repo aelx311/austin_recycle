@@ -40,7 +40,7 @@ public class Model {
         }
         catch (Exception e)
         {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "Error initializing connection", e);
         }
     }
     
@@ -60,7 +60,7 @@ public class Model {
         }
         catch (Exception e) 
         {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "Error getting response", e);
             return null;
         }
     }
@@ -117,7 +117,7 @@ public class Model {
         }
         catch (JSONException e)
         {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "Error parsing response", e);
         }
 
         // Sort facilities by distance from the user

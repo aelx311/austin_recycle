@@ -15,11 +15,11 @@ Instructions
 5. Select one of the facility will bring you to the facility's details page.
 	5.1 A map showing the location of the facility is shown.
 	5.2 Press the call button to contact the facility.
-	5.3 Press the get direction button to get turn by turn navgation to the facility.
+	5.3 Press the get direction button to get turn by turn navigation to the facility.
 
 List of Completed Features
 ===========================
-1. Location autocomplate by Google.
+1. Location autocomplete by Google.
 2. Display list of facilities sorted by distance from specified address.
 3. Show all accepted recycling materials by the facilities.
 4. Show the location of the facility on a map.
@@ -40,8 +40,22 @@ List of Added Features
 
 List of Classes and Chunks of Code from Other Sources
 ======================================================
+1.	Classes: LocationAutoCompleteAdapter & MainActivity.PlacesTask
+	Source: ("Adding Autocomplete to your Android App", https://developers.google.com/places/training/autocomplete-android)
+
+2. 	Classes: MaterialListAdapter.ViewHolder & ResultListAdapter.ViewHolder
+	Source: ("Android ListView - Tutorial", http://www.vogella.com/articles/AndroidListView/article.html#androidlists_overview)
+
+3.	Class: Parcelable in FacilityItem
+	Source: ("How to properly implement Parcelable with an ArrayList<Parcelable>?", http://stackoverflow.com/questions/7042272/how-to-properly-implement-parcelable-with-an-arraylistparcelable)
 
 
 List of Classes and Chunks of Code Completed Ourselves
 ======================================================
-
+1. MainActivity
+2. ResultListActivity
+3. FacilityDetailsActivity
+4. SplashScreenActivity
+5. MaterialItem
+6. MaterialListAdapter
+7. ResultListAdapter

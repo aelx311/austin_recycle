@@ -40,6 +40,7 @@ public class Model {
         }
         catch (Exception e)
         {
+        	
             Log.e(TAG, "Error initializing connection", e);
         }
     }

@@ -28,7 +28,6 @@ public class ResultListActivity extends ListActivity {
 		_current_lat = this.getIntent().getDoubleExtra("CURRENT_LAT", 0);
 		_current_long = this.getIntent().getDoubleExtra("CURRENT_LONG", 0);
 		
-		
 		// Make sure the object is passed correctly
 //		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
 //    	for(FacilityItem x : _facilityItem) {

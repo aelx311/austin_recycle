@@ -132,7 +132,7 @@ public class MainActivity extends Activity {
 
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) MainActivity.this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextView.setThreshold(2);
+		_locationAutoCompleteTextView.setThreshold(2);		
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				_placesTask = new PlacesTask();
@@ -141,15 +141,13 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-
+				Log.d(TAG, "afterTextChanged: " + s.toString());
 			}
 
 			@Override
 			public void beforeTextChanged(CharSequence s, int start, int count,
 					int after) {
-				// TODO Auto-generated method stub
-
+				Log.d(TAG, "beforeTextChanged: " + s);
 			}
 		});
 		_locationAutoCompleteTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -217,8 +215,12 @@ public class MainActivity extends Activity {
 		AlertDialog.Builder aboutDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 		aboutDialogBuilder.setTitle("About Austin Recycling");
 		aboutDialogBuilder.setMessage("Developed by: David, Mike and Alex\n\nAdvised by: Mike Scott\n\nMost location related features are powered by Google.");
-		aboutDialogBuilder.setNeutralButton("Done", null);
-		
+		aboutDialogBuilder.setNeutralButton("Done", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();
 	}
@@ -289,7 +291,7 @@ public class MainActivity extends Activity {
 				_materialEditText.setText(newString);
 			}
 		});
-
+		
 		_materialListDialog = materialDialogBuilder.create();
 		_materialListDialog.show();
 	}
@@ -350,8 +352,26 @@ public class MainActivity extends Activity {
 					+ currentAddress.getAddressLine(2));
 		}
 		catch (IOException e) {
+			showErrorDialog("Error getting current location.");
 			Log.e(TAG, "Error getting current location", e);
 		}
+	}
+	
+	/**
+	 * show error dialog when exception occurs
+	 */
+	private void showErrorDialog(String errorMessage) {
+		final AlertDialog.Builder errorDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+		errorDialogBuilder.setTitle("Error");
+		errorDialogBuilder.setMessage(errorMessage + "\nPlease try again.");
+		errorDialogBuilder.setNeutralButton("Ok", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		final AlertDialog errorDialog = errorDialogBuilder.create();
+		errorDialog.show();
 	}
 
 	/**
@@ -439,9 +459,9 @@ public class MainActivity extends Activity {
 		}
 		
 		 @Override
-		    protected void onPreExecute() {
-				showProgressDialog();
-		    }
+		 protected void onPreExecute() {
+			 showProgressDialog();
+		 }
 		 
 		/** 
 		 * Invoked in asynchronously in MainActivity when the network request 
@@ -451,7 +471,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(ArrayList<FacilityItem> facilities) {
 			Log.d(TAG, "begin onPostExecute");
 			_progressDialog.dismiss();
-			// Starting the ResultListActivity
+			// Start the ResultListActivity
 			Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
 			resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);
 			resultIntent.putExtra("CURRENT_LAT", _currentLat);
@@ -498,9 +518,11 @@ public class MainActivity extends Activity {
 				}
 			}
 			catch (MalformedURLException e) {
+				showErrorDialog("Error connecting to Google.");
 				Log.e(TAG, "Error processing Places API URL", e);
 			}
 			catch (IOException e) {
+				showErrorDialog("Error connecting to Google.");
 				Log.e(TAG, "Error connecting to Places API", e);
 			}
 			finally {
@@ -521,6 +543,7 @@ public class MainActivity extends Activity {
 				}
 			}
 			catch (JSONException e) {
+				showErrorDialog("Error connecting to Google.");
 				Log.e(TAG, "Cannot process JSON results", e);
 			}
 

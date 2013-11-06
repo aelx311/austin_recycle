@@ -6,13 +6,14 @@ Alex Ng Dehe (an8645)
 
 Instructions
 ============
-1. Select material(s) that you want to recycle. Selected material(s) will disappear from the dialog box.
+1. Select material(s) that you want to recycle. Selected material(s) will disappear/remove from the dialog box.
 2. Enter address. A list of suggested addresses will appear to minimize typo in address.
 	2.1 If address is left empty, the app will use the current location of the device.
 3. Click the Go button at the bottom to search for locations.
-4. A list of facilities will show up sorted according to the distance from the entered address.
-	4.1 A list of other accepted materials by the facilities will show up.
-5. Select one of the facility will bring you to the facility's details page.
+4. A list of facilities will show up sort according to the distance from the entered address.
+	4.1 A list of other accepted materials by the facilities is displayed.
+	4.2 Address of the facility is showed as well.
+5. Select one of the facilities will bring you to the facility's details page.
 	5.1 A map showing the location of the facility is shown.
 	5.2 Press the call button to contact the facility.
 	5.3 Press the get direction button to get turn by turn navigation to the facility.

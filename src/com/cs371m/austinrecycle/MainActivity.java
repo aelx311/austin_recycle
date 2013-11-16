@@ -13,6 +13,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.cs371m.austinrecycle.MaterialListAdapter.ViewHolder;
+
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
@@ -26,11 +28,16 @@ import android.provider.Settings;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ClipData.Item;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -40,13 +47,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity<ViewGroup> extends Activity {
 
 	private static final String TAG = "MainActivity.java";
 
@@ -222,6 +235,11 @@ public class MainActivity extends Activity {
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();
 	}
+	
+	static class ViewHolder {
+		protected TextView text;
+		protected CheckBox checkbox;
+	}
 
 	/**
 	 * Display list of materials
@@ -230,68 +248,320 @@ public class MainActivity extends Activity {
 	private void showMaterialDialog() {
 		Log.d(TAG, "entering popChooseMaterialDialog");
 
-		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this);
-		materialDialogBuilder.setTitle("Please select materials");
-
-		// Set the view of Alert Dialog to custom ListView
-		LayoutInflater inflater = MainActivity.this.getLayoutInflater();
-		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
-		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
-		_listView.setBackgroundColor(Color.WHITE);
-		materialDialogBuilder.setView(popupLayout);
-
-		// Dialog CANCEL button
-		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				_materialEditText.setText("");
-				dialog.dismiss();
-			}
-		});
-
-		// Dialog DONE button
-		materialDialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-
-		// Read material names and icons from arrays.xml
+		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this)
+		.setIcon(R.drawable.about)
+        .setTitle("Please select materials");
+//		materialDialogBuilder.setCustomTitle(getLayoutInflater().inflate(R.layout.checkboxes, null));
+		
+		//
 		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
 		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
-
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
-			//			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
+//						_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
 			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i]));
 		}
 		_icons.recycle();
 
-		// Setup custom adapter
-		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
-		_listView.setAdapter(_adapter);
-		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-				Log.d(TAG, "position clicked: " + position);
-				// Grab the clicked item's name before removing the item from
-				String clickedMaterial = _materialItemArray.get(position).getName();
-				String oldString = _materialEditText.getText().toString();
 
-				// Remove clicked item from the adapter's data array and update
-				// => It gets removed from the dialog
-				_materialItemArray.remove(position);
-				_adapter.notifyDataSetChanged();
+		final CharSequence[] items = new CharSequence[_materialNames.length];
+		final boolean[] IsSelectedItems = new boolean[_materialNames.length];
+		final ArrayList<checkboxModel> list = new ArrayList<checkboxModel>();
 
-				// Format into comma separated string
-				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
-				_materialEditText.setText(newString);
+		for(int i=0; i<_materialNames.length; ++i) {
+			items[i] = _materialNames[i];
+			IsSelectedItems[i] = false;
+			
+			list.add(new checkboxModel(_materialNames[i]));
+			list.get(i).setSelected(false);
+		}
+		
+		
+//		// arraylist to keep the selected items
+		final ArrayList<Integer> seletedItems = new ArrayList<Integer>();
+		
+		ListAdapter adapter = new ArrayAdapter<MaterialItem>(this, R.layout.checkboxes, R.id.textView1,
+				_materialItemArray){
+			public View getView(final int position, View convertView, android.view.ViewGroup parent) {
+				
+				ViewHolder viewHolder = null;
+				
+				if(convertView == null){				
+					LayoutInflater inflator = getLayoutInflater();
+					convertView = inflator.inflate(R.layout.checkboxes, null);
+					viewHolder = new ViewHolder();
+					viewHolder.text = (TextView) convertView.findViewById(R.id.textView1);
+					viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.checkBox1);
+					convertView.setTag(viewHolder);
+					viewHolder.checkbox.setTag(IsSelectedItems[position]);
+				} 
+				else {
+					((ViewHolder) convertView.getTag()).checkbox.setTag(IsSelectedItems[position]);
+				}
+				
+				viewHolder = (ViewHolder) convertView.getTag();
+//				Put the image on the TextView
+				final Drawable image;
+				Resources res = getResources();
+				image = res.getDrawable(_materialItemArray.get(position).getIcon());
+				image.setBounds(0, 0, 90, 90);
+				viewHolder.text.setCompoundDrawables(image, null, null, null);
+				viewHolder.text.setText(_materialItemArray.get(position).getName());
+				
+				//Add margin between image and text (support various screen densities)
+				int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+				viewHolder.text.setCompoundDrawablePadding(dp5);
+
+//				viewHolder.checkbox.setChecked(IsSelectedItems[position]);
+				/**
+				*    Ensure no other setOnCheckedChangeListener is attached before you manually
+				*    change its state.
+				*/
+				viewHolder.checkbox.setOnCheckedChangeListener(null);
+				if(IsSelectedItems[position]) viewHolder.checkbox.setChecked(true);
+				else viewHolder.checkbox.setChecked(false);
+				
+				viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+						if (isChecked) {
+							// If the user checked the item, add it to the selected items
+							seletedItems.add(position);
+							IsSelectedItems[position] = true;
+						} 
+						else if (seletedItems.contains(position)) {
+							// Else, if the item is already in the array, remove it
+							seletedItems.remove(Integer.valueOf(position));
+							IsSelectedItems[position] = false;
+						}
+					}
+				});
+				
+				return convertView;
 			}
-		});
+		};
+			
+	    
+				
+//			        final ViewHolder viewHolder = new ViewHolder();
+//			        
+//			        viewHolder._name = (TextView) v.findViewById(R.id.textView1);
+//			        viewHolder._checked = (CheckBox) v.findViewById(R.id.checkBox1);
+//			        v.setTag(viewHolder);
+//			        
+//			        viewHolder._checked.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+////					      @Override
+//					      public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+//					    	  if (isChecked) {
+////									// If the user checked the item, add it to the selected items
+//									seletedItems.add(position);
+//									IsSelectedItems[position] = true;
+//									Log.d("add index:", position+"");
+//								} else if (seletedItems.contains(position)) {
+//									// Else, if the item is already in the array, remove it
+//									seletedItems.remove(Integer.valueOf(position));
+//									IsSelectedItems[position] = false;
+//									Log.d("remove index:", position+"");
+//								}
+////					            int pos = Integer.parseInt( v.getTag().toString()) ; //to take the actual position
+////					            Log.d("position:", pos+""); // we don't need to check whether it is true or false, however you can put if-else to debug the app.
+//					      }
+//					});
+//			        
+//			        viewHolder._name.setCompoundDrawablesWithIntrinsicBounds(_materialItemArray.get(position).getIcon(), 0, 0, 0);
+//			        viewHolder._name.setText(_materialItemArray.get(position).getName());
+//					
+//					//Add margin between image and text (support various screen densities)
+//					int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+//					viewHolder._name.setCompoundDrawablePadding(dp5);
+//				}
+	        ///////////////////////////////////////////////////////////////////////////////////////////////
+				
+//				MaterialItem data = _materialItemArray.get(position);
+//				
+//				CheckBox chb = (CheckBox) v.findViewById(R.id.checkBox1);
+//				chb.setChecked(data.getChecked());
+////				// We tag the data object to retrieve it on the click listener.
+//				chb.setTag(data);
+//				chb.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+////				      @Override
+//				      public void onCheckedChanged(CompoundButton v, boolean isChecked) {
+//				    	  if (isChecked) {
+////								// If the user checked the item, add it to the selected items
+//								seletedItems.add(position);
+//								IsSelectedItems[position] = true;
+//								Log.d("add index:", position+"");
+//							} else if (seletedItems.contains(position)) {
+//								// Else, if the item is already in the array, remove it
+//								seletedItems.remove(Integer.valueOf(position));
+//								IsSelectedItems[position] = false;
+//								Log.d("remove index:", position+"");
+//							}
+////				            int pos = Integer.parseInt( v.getTag().toString()) ; //to take the actual position
+////				            Log.d("position:", pos+""); // we don't need to check whether it is true or false, however you can put if-else to debug the app.
+//				      }
+//				});
+//				
+//				TextView tv = (TextView)v.findViewById(R.id.textView1);
+//
+//				//Put the image on the TextView
+//				final Drawable image;
+//				Resources res = getResources();
+//				image = res.getDrawable(_materialItemArray.get(position).getIcon());
+//				image.setBounds(0, 0, 70, 70);
+//				tv.setCompoundDrawables(image, null, null, null);
+////				tv.setCompoundDrawablesWithIntrinsicBounds(_materialItemArray.get(position).getIcon(), 0, 0, 0);
+//				tv.setText(data.getName());
+//				
+//				//Add margin between image and text (support various screen densities)
+//				int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
+//				tv.setCompoundDrawablePadding(dp5);
+//
+//				return v;
+//			}
+//		};
+		
+		
 
-		_materialListDialog = materialDialogBuilder.create();
-		_materialListDialog.show();
+		
+
+		materialDialogBuilder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int item) {
+				//...
+			}
+		})
+		// Set the action buttons
+		.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//  Your code when user clicked on OK
+				//  You can write the code  to save the selected item here
+
+				String oldString = "";
+				for(int i=0; i<_materialNames.length; ++i) {
+					String clickedMaterial = items[i].toString();
+					if(IsSelectedItems[i])
+						oldString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+				}
+				_materialEditText.setText(oldString);
+				dialog.dismiss();
+			}
+		})
+		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int id) {
+				//  Your code when user clicked on Cancel
+				_materialEditText.setText("");
+				dialog.dismiss();
+			}
+		}).show();
+		
+		
+//		materialDialogBuilder.setMultiChoiceItems(items, null,
+//				new DialogInterface.OnMultiChoiceClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int indexSelected,
+//					boolean isChecked) {
+//				if (isChecked) {
+//					// If the user checked the item, add it to the selected items
+//					seletedItems.add(indexSelected);
+//					IsSelectedItems[indexSelected] = true;
+//				} else if (seletedItems.contains(indexSelected)) {
+//					// Else, if the item is already in the array, remove it
+//					seletedItems.remove(Integer.valueOf(indexSelected));
+//					IsSelectedItems[indexSelected] = false;
+//				}
+//			}
+//		})
+//		// Set the action buttons
+//		.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int id) {
+//				//  Your code when user clicked on OK
+//				//  You can write the code  to save the selected item here
+//				
+//				String oldString = "";
+//				for(int i=0; i<_materialNames.length; ++i) {
+//					String clickedMaterial = items[i].toString();
+//					if(IsSelectedItems[i])
+//						oldString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+//				}
+//				_materialEditText.setText(oldString);
+//				dialog.dismiss();
+//			}
+//		})
+//		.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int id) {
+//				//  Your code when user clicked on Cancel
+//				_materialEditText.setText("");
+//				dialog.dismiss();
+//			}
+//		});
+//		
+//		
+////		// Set the view of Alert Dialog to custom ListView
+////		LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+////		final View popupLayout = inflater.inflate(R.layout.material_list_view, null);
+////		_listView = (ListView) popupLayout.findViewById(R.id.material_listView);
+////		_listView.setBackgroundColor(Color.WHITE);
+////		materialDialogBuilder.setView(popupLayout);
+////
+////		// Dialog CANCEL button
+////		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+////			@Override
+////			public void onClick(DialogInterface dialog, int which) {
+////				_materialEditText.setText("");
+////				dialog.dismiss();
+////			}
+////		});
+////
+////		// Dialog DONE button
+////		materialDialogBuilder.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+////			@Override
+////			public void onClick(DialogInterface dialog, int which) {
+////				dialog.dismiss();
+////			}
+////		});
+////
+////		// Read material names and icons from arrays.xml
+////		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+////		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
+////
+////		// Store MaterialItem into ArrayList
+////		for(int i=0; i<_materialNames.length; ++i) {
+////			//			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i], false));
+////			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i]));
+////		}
+////		_icons.recycle();
+////
+////		// Setup custom adapter
+////		_adapter = new MaterialListAdapter(this, R.layout.material_list_item, _materialItemArray);
+////		_listView.setAdapter(_adapter);
+////		_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+////			@Override
+////			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+////				Log.d(TAG, "position clicked: " + position);
+////				// Grab the clicked item's name before removing the item from
+////				String clickedMaterial = _materialItemArray.get(position).getName();
+////				String oldString = _materialEditText.getText().toString();
+////
+////				// Remove clicked item from the adapter's data array and update
+////				// => It gets removed from the dialog
+////				_materialItemArray.remove(position);
+////				_adapter.notifyDataSetChanged();
+////
+////				// Format into comma separated string
+////				String newString = oldString.equals("") ? clickedMaterial : oldString + "," + clickedMaterial;
+////				.setText(newString);
+////			}
+////		});
+//		_materialListDialog = materialDialogBuilder.create();
+//		_materialListDialog.show();
+	}
+
+	private void setCustomTitle(View inflate) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

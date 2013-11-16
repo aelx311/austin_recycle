@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 //import android.widget.CheckBox;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +24,7 @@ public class MaterialListAdapter extends ArrayAdapter<MaterialItem> {
 	static class ViewHolder {
 		public ImageView _icon;
 		public TextView _name;
-//		public CheckBox _checked;
+		public CheckBox _checked;
 	}
 	
 	public MaterialListAdapter(Context context, int layoutResourceId, ArrayList<MaterialItem> itemArray) {

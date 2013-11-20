@@ -8,6 +8,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,13 +42,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
@@ -61,6 +62,7 @@ public class MainActivity<ViewGroup> extends Activity {
 	private EditText _materialEditText;
 	private ImageButton _searchButton;
 	private AutoCompleteTextView _locationAutoCompleteTextView;
+	private CheckBox _currentLocationCheckBox;
 
 	private String[] _materialNames;
 	private TypedArray _icons;
@@ -85,7 +87,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		setContentView(R.layout.activity_main);
 
 		_materialItemArray = new ArrayList<MaterialItem>();
-		_geocoder = new Geocoder(this);
+		_geocoder = new Geocoder(this, Locale.getDefault());
 
 		// Setup _materialEditText to show MaterialDialog when clicked
 		_materialEditText = (EditText) MainActivity.this.findViewById(R.id.materials_editText);
@@ -108,12 +110,11 @@ public class MainActivity<ViewGroup> extends Activity {
 				if(_materialEditText.getText().toString().equals("")) {
 					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
 				}
-				// If users leave the location blank, use GPS to find current location of the device
 				else if(_locationAutoCompleteTextView.getText().toString().equals("")) {
-					showLocationDialog();
+                    showLocationDialog();
 				}
 				else {
-					// Get the latitude and longitude of current location
+					// Get the latitude and longitude of address entered
 					try {
 						String currentAddress = _locationAutoCompleteTextView.getText().toString();
 						List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
@@ -166,6 +167,23 @@ public class MainActivity<ViewGroup> extends Activity {
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});
+		
+		// Setup actions to get current location
+		_currentLocationCheckBox = (CheckBox)this.findViewById(R.id.current_location_checkbox);
+		_currentLocationCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if(isChecked) {
+					if(checkGpsStatus()) {
+						showLocationDialog();
+					}
+					else {
+						// GPS is not turned on
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -214,7 +232,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		switch(item.getItemId()) {
 		case(R.id.action_about):
 			showAbout();
-		return true;
+			return true;
 		}
 
 		return false;
@@ -383,8 +401,10 @@ public class MainActivity<ViewGroup> extends Activity {
 		Criteria criteria = new Criteria();
 		criteria.setAccuracy(Criteria.ACCURACY_FINE);
 		criteria.setPowerRequirement(Criteria.POWER_HIGH);
+		
 		String best = _locationManager.getBestProvider(criteria, true);
-		_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
+		
+		_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, new LocationListener() {
 			@Override
 			public void onLocationChanged(Location location) {
 				Log.d(TAG, "onLocationChanged");
@@ -411,6 +431,8 @@ public class MainActivity<ViewGroup> extends Activity {
 		Location location = _locationManager.getLastKnownLocation(best);
 		_currentLat = location.getLatitude();
 		_currentLong = location.getLongitude();
+		_locationAutoCompleteTextView.setText(_currentLat + ", "
+				+ _currentLong + ", ");
 
 		try {
 			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
@@ -443,37 +465,19 @@ public class MainActivity<ViewGroup> extends Activity {
 	}
 
 	/**
-	 * Build locationDialog
+	 * Show locationDialog
 	 */
 	private void showLocationDialog() {
-		final AlertDialog.Builder locationDialogBuilder = new AlertDialog.Builder(MainActivity.this);
-		locationDialogBuilder.setTitle("Use current location");
-		locationDialogBuilder.setMessage("You did not enter an address. Would you like to use your current location?");
-		locationDialogBuilder.setNegativeButton("No", new AlertDialog.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		});
-		locationDialogBuilder.setPositiveButton("Yes", new AlertDialog.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if(checkGpsStatus()) {
-					MainActivity.this.getCurrentLocation();
-				}
-				else {
-					dialog.dismiss();
-					showGpsDialog();
-				}
-			}
-		});
-
-		final AlertDialog locationDialog = locationDialogBuilder.create();
-		locationDialog.show();
+		if(checkGpsStatus()) {
+			MainActivity.this.getCurrentLocation();
+		}
+		else {
+			showGpsDialog();
+		}
 	}
 
 	/**
-	 * Build GPS Settings dialog
+	 * Show GPS Settings dialog
 	 */
 	private void showGpsDialog() {
 		final AlertDialog.Builder gpsDialogBuilder = new AlertDialog.Builder(MainActivity.this);

@@ -20,5 +20,6 @@
     <string name="get_direction">Get directions</string>
     <string name="accepts">This facility also accepts:</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="current_location">Use current location</string>
 
 </resources>

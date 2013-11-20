@@ -8,8 +8,6 @@
         android:name="com.cs371m.austinrecycle.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.cs371m.austinrecycle.permission.MAPS_RECEIVE" />
-
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="17" />
@@ -19,6 +17,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Required to show current location -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -28,8 +27,6 @@
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
-
-    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"

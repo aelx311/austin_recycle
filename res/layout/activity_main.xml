@@ -41,6 +41,12 @@
         android:completionThreshold="2"
         android:imeOptions="actionSearch"
         android:hint="@string/location_hint"/>
+    
+    <CheckBox
+        android:id="@+id/current_location_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/current_location" />
         
     <RelativeLayout
         android:layout_width="match_parent"

@@ -38,9 +38,9 @@
         android:id="@+id/location_autoCompleteTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/location_hint"
-        android:inputType="textMultiLine"
-        android:maxLines="2" />
+        android:completionThreshold="2"
+        android:imeOptions="actionSearch"
+        android:hint="@string/location_hint"/>
         
     <RelativeLayout
         android:layout_width="match_parent"

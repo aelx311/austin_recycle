@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -40,6 +41,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -137,7 +140,6 @@ public class MainActivity<ViewGroup> extends Activity {
 
 		// Location AutoComplete using suggestions from Google Location API
 		_locationAutoCompleteTextView = (AutoCompleteTextView) MainActivity.this.findViewById(R.id.location_autoCompleteTextView);
-		_locationAutoCompleteTextView.setThreshold(2);		
 		_locationAutoCompleteTextView.addTextChangedListener(new TextWatcher() {
 			public void onTextChanged(CharSequence s, int start, int before, int count) {
 				_placesTask = new PlacesTask();
@@ -159,6 +161,8 @@ public class MainActivity<ViewGroup> extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				_placesTask.cancel(true);
+				InputMethodManager imm = (InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(_locationAutoCompleteTextView.getWindowToken(), 0);
 				_locationAutoCompleteTextView.dismissDropDown();
 			}
 		});

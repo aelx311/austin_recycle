@@ -181,6 +181,9 @@ public class MainActivity<ViewGroup> extends Activity {
 						_currentLocationCheckBox.setChecked(false);
 					}
 				}
+				else {
+					_locationAutoCompleteTextView.setText("");
+				}
 			}
 		});
 	}
@@ -390,165 +393,112 @@ public class MainActivity<ViewGroup> extends Activity {
 		
 		return gpsStatus;
 	}
+	
+	/**
+	 * Check mobile status
+	 * @return true if mobile is on
+	 * @return false if mobile is off
+	 */
+	private boolean checkMobileStatus() {
+		ContentResolver contentResolver = MainActivity.this.getBaseContext().getContentResolver();
+		boolean mobileStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.NETWORK_PROVIDER);
+		
+		return mobileStatus;
+	}
 
 	/**
 	 * Get current location using GPS and display the address to _locationAutoCompleteTextView
 	 */
 	private void getCurrentLocation() {
-		try {
-			_locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
-			Location location = null;
+		_locationManager = (LocationManager)this.getSystemService(LOCATION_SERVICE);
+		Location location = null;
 
-			boolean isGPSEnabled = _locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			boolean isNetworkEnabled = _locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-			if (!isGPSEnabled && !isNetworkEnabled) {
-				// no network provider is enabled
-			}
-			else {
-				if (isNetworkEnabled) {
-					_locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 15000, 10, new LocationListener() {						
-						@Override
-						public void onStatusChanged(String provider, int status, Bundle extras) {
-							// TODO Auto-generated method stub
-						}
-						
-						@Override
-						public void onProviderEnabled(String provider) {
-							// TODO Auto-generated method stub
-						}
-						
-						@Override
-						public void onProviderDisabled(String provider) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-						@Override
-						public void onLocationChanged(Location location) {
-							// TODO Auto-generated method stub
-							
-						}
-					});
-					Log.d("Network", "Network Enabled");
-					if (_locationManager != null) {
-						location = _locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-						if (location != null) {
-							_currentLat = location.getLatitude();
-							_currentLong = location.getLongitude();
-						}
-					}
+		if (checkMobileStatus()) {
+			_locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 15000, 10, new LocationListener() {						
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+					// TODO Auto-generated method stub
 				}
-				if (isGPSEnabled) {
-					if (location == null) {
-						_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
-							
-							@Override
-							public void onStatusChanged(String provider, int status, Bundle extras) {
-								// TODO Auto-generated method stub
-								
-							}
-							
-							@Override
-							public void onProviderEnabled(String provider) {
-								// TODO Auto-generated method stub
-								
-							}
-							
-							@Override
-							public void onProviderDisabled(String provider) {
-								// TODO Auto-generated method stub
-								
-							}
-							
-							@Override
-							public void onLocationChanged(Location location) {
-								// TODO Auto-generated method stub
-								
-							}
-						});
-						Log.d(TAG, "GPS Enabled");
-						if (_locationManager != null) {
-							location = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-							if (location != null) {
-								Log.d(TAG, "lat:"+location.getLatitude()+"\n"
-							+"long:"+location.getLongitude());
-								_currentLat = location.getLatitude();
-								_currentLong = location.getLongitude();
-							}
-						}
-					}
+
+				@Override
+				public void onProviderEnabled(String provider) {
+					// TODO Auto-generated method stub
+				}
+
+				@Override
+				public void onProviderDisabled(String provider) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void onLocationChanged(Location location) {
+					// TODO Auto-generated method stub
+
+				}
+			});
+
+			Log.d("Network", "Network Enabled");
+			if (_locationManager != null) {
+				location = _locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				if (location != null) {
+					_currentLat = location.getLatitude();
+					_currentLong = location.getLongitude();
 				}
 			}
-			try {
-				List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
-				Log.d(TAG, "returnedAddress: " + returnedAddress.size());
-				Address currentAddress = returnedAddress.get(0);
-				_locationAutoCompleteTextView.setText(currentAddress.getAddressLine(0) + ", "
-						+ currentAddress.getAddressLine(1) + ", "
-						+ currentAddress.getAddressLine(2));
-			}
-			catch (IOException e) {
-				showErrorDialog("Error getting current location.");
-				Log.e(TAG, "Error getting current location", e);
-			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
 		}
 		
-//		Criteria criteria = new Criteria();
-//		String best = _locationManager.getBestProvider(criteria, true);
-//
-//		_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
-//			@Override
-//			public void onLocationChanged(Location location) {
-//				Log.d(TAG, "onLocationChanged");
-//				_currentLat = location.getLatitude();
-//				_currentLong = location.getLongitude();
-//			}
-//
-//			@Override
-//			public void onProviderDisabled(String provider) {
-//				Log.d(TAG, "begin onProviderDisabled");
-//				Log.d(TAG, provider);
-//				Log.d(TAG, "end onProviderDisabled");
-//			}
-//
-//			@Override
-//			public void onProviderEnabled(String provider) {
-//				Log.d(TAG, "begin onProviderEnabled");
-//				Log.d(TAG, provider);
-//				Log.d(TAG, "end onProviderEnabled");
-//			}
-//
-//			@Override
-//			public void onStatusChanged(String provider, int status, Bundle extras) {
-//				Log.d(TAG, "onStatusChanged");
-//			}
-//		});
-//
-//		Location location = _locationManager.getLastKnownLocation(best);
-//		if(location == null) {
-//			Log.d(TAG, "_locationManager is null");
-//		}
-//
-//		_currentLat = location.getLatitude();
-//		_currentLong = location.getLongitude();
-//
-//		_locationAutoCompleteTextView.setText(_currentLat + ", "+ _currentLong + ", ");
-//
-//		try {
-//			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
-//			Address currentAddress = returnedAddress.get(0);
-//			_locationAutoCompleteTextView.setText(currentAddress.getAddressLine(0) + ", "
-//					+ currentAddress.getAddressLine(1) + ", "
-//					+ currentAddress.getAddressLine(2));
-//		}
-//		catch (IOException e) {
-//			showErrorDialog("Error getting current location.");
-//			Log.e(TAG, "Error getting current location", e);
-//		}
+		if (checkGpsStatus()) {
+			if (location == null) {
+				_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
+
+					@Override
+					public void onStatusChanged(String provider, int status, Bundle extras) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onProviderEnabled(String provider) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onProviderDisabled(String provider) {
+						// TODO Auto-generated method stub
+
+					}
+
+					@Override
+					public void onLocationChanged(Location location) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
+				Log.d(TAG, "GPS Enabled");
+				if (_locationManager != null) {
+					location = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					if (location != null) {
+						_currentLat = location.getLatitude();
+						_currentLong = location.getLongitude();
+					}
+				}
+			}
+		}
+		try {
+			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
+			Log.d(TAG, "returnedAddress: " + returnedAddress.size());
+			Address currentAddress = returnedAddress.get(0);
+			_locationAutoCompleteTextView.setText(currentAddress.getAddressLine(0) + ", "
+					+ currentAddress.getAddressLine(1) + ", "
+					+ currentAddress.getAddressLine(2));
+		}
+		catch (IOException e) {
+			showErrorDialog("Error getting current location.");
+			Log.e(TAG, "Error getting current location", e);
+		}
 	}
 
 	/**

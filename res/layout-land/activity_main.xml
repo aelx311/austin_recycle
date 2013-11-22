@@ -41,9 +41,17 @@
         android:layout_height="wrap_content"
         android:hint="@string/location_hint"
         android:imeOptions="flagNoExtractUi"
+        android:selectAllOnFocus="true"
         android:maxLines="2"
         android:textSize="12sp" />
-        
+    
+    <CheckBox
+        android:id="@+id/current_location_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="@string/current_location" />
+    
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent" >

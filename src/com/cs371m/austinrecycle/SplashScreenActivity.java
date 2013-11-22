@@ -33,6 +33,7 @@ public class SplashScreenActivity extends Activity {
 				Log.d(TAG, "mobile state: " + mobile.name());
 				Log.d(TAG, "wifi state: " + wifi.name());
 
+//				if(!(wifi.equals(State.CONNECTED))) {
 				if(!(mobile.equals(State.CONNECTED) || wifi.equals(State.CONNECTED))) {
 					AlertDialog.Builder connectionDialogBuilder = new AlertDialog.Builder(SplashScreenActivity.this);
 					connectionDialogBuilder.setTitle("Connection error");

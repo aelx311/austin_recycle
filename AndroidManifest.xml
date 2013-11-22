@@ -11,7 +11,10 @@
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="17" />
-
+	
+	<uses-feature android:name="android.hardware.location.gps" />
+	<uses-feature android:name="android.hardware.location.network" />
+    
     <!-- PERMISSIONS USED IN THE APP -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />

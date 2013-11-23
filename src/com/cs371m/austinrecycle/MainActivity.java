@@ -77,12 +77,23 @@ public class MainActivity<ViewGroup> extends Activity {
 	private AlertDialog _materialListDialog;
 
 	private PlacesTask _placesTask;
-
+	private boolean[] oldSelectedItems;
+	private ArrayList<Integer> seletedItems;
 	/**
 	 * onCreate
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+		oldSelectedItems = new boolean[_materialNames.length];
+		
+		for(int i = 0; i < oldSelectedItems.length; i++)
+			oldSelectedItems[i] = false;
+		
+		seletedItems = new ArrayList<Integer>();
+		
+		Log.d("onCreate", "onCreate");
+				
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
@@ -284,15 +295,15 @@ public class MainActivity<ViewGroup> extends Activity {
 		_icons.recycle();
 
 		final CharSequence[] items = new CharSequence[_materialNames.length];
-		final boolean[] selectedItems = new boolean[_materialNames.length];
+		final int[] localSelectedItems = new int[_materialNames.length];
 
 		for(int i=0; i<_materialNames.length; ++i) {
 			items[i] = _materialNames[i];
-			selectedItems[i] = false;
+			localSelectedItems[i] = 0;
 		}
 
 		// ArrayList to keep the selected items
-		final ArrayList<Integer> seletedItems = new ArrayList<Integer>();
+//		final ArrayList<Integer> seletedItems = new ArrayList<Integer>();
 
 		ListAdapter adapter = new ArrayAdapter<MaterialItem>(this, R.layout.checkboxes, R.id.textView1, _materialItemArray){
 			public View getView(final int position, View convertView, android.view.ViewGroup parent) {
@@ -306,10 +317,10 @@ public class MainActivity<ViewGroup> extends Activity {
 					viewHolder.text = (TextView) convertView.findViewById(R.id.textView1);
 					viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.checkBox1);
 					convertView.setTag(viewHolder);
-					viewHolder.checkbox.setTag(selectedItems[position]);
+					viewHolder.checkbox.setTag(oldSelectedItems[position]);
 				} 
 				else {
-					((ViewHolder) convertView.getTag()).checkbox.setTag(selectedItems[position]);
+					((ViewHolder) convertView.getTag()).checkbox.setTag(oldSelectedItems[position]);
 				}
 
 				viewHolder = (ViewHolder) convertView.getTag();
@@ -326,25 +337,28 @@ public class MainActivity<ViewGroup> extends Activity {
 				int dp5 = (int) (5 * getResources().getDisplayMetrics().density + 0.5f);
 				viewHolder.text.setCompoundDrawablePadding(dp5);
 
-				/**
-				 *    Ensure no other setOnCheckedChangeListener is attached before you manually
-				 *    change its state.
-				 */
+				//Ensure no other setOnCheckedChangeListener is attached before you manually change its state.
 				viewHolder.checkbox.setOnCheckedChangeListener(null);
-				if(selectedItems[position]) viewHolder.checkbox.setChecked(true);
+				if(oldSelectedItems[position]) viewHolder.checkbox.setChecked(true);
 				else viewHolder.checkbox.setChecked(false);
 
 				viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 					public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 						if (isChecked) {
 							// If the user checked the item, add it to the selected items
+							Log.d("true","true");
 							seletedItems.add(position);
-							selectedItems[position] = true;
+    						// selectedItems[position] = true;
+//							oldSelectedItems[position] = true;
+							localSelectedItems[position] = 2;
 						} 
 						else if (seletedItems.contains(position)) {
+							Log.d("false","false");
 							// Else, if the item is already in the array, remove it
 							seletedItems.remove(Integer.valueOf(position));
-							selectedItems[position] = false;
+							// selectedItems[position] = false;
+//							oldSelectedItems[position] = false;
+							localSelectedItems[position] = 1;
 						}
 					}
 				});
@@ -362,7 +376,11 @@ public class MainActivity<ViewGroup> extends Activity {
 				String oldString = "";
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
-					if(selectedItems[i])
+					if(localSelectedItems[i] == 2)
+						oldSelectedItems[i] = true;
+					else if(localSelectedItems[i] == 1)
+						oldSelectedItems[i] = false;
+					if(oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}
 				_materialEditText.setText(oldString);
@@ -373,7 +391,13 @@ public class MainActivity<ViewGroup> extends Activity {
 		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int id) {
-				_materialEditText.setText("");
+				String oldString = "";
+				for(int i=0; i<_materialNames.length; ++i) {
+					String clickedMaterial = items[i].toString();
+					if(oldSelectedItems[i])
+						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
+				}
+				_materialEditText.setText(oldString);
 				dialog.dismiss();
 			}
 		});

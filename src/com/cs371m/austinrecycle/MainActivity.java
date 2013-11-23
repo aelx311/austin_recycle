@@ -15,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
@@ -106,7 +105,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				_materialEditText.setText("");
+//				_materialEditText.setText("");
 				_materialItemArray.clear();
 				showMaterialDialog();
 			}
@@ -186,6 +185,8 @@ public class MainActivity<ViewGroup> extends Activity {
 				if(isChecked) {
 					if(checkGpsStatus()) {
 						MainActivity.this.getCurrentLocation();
+						InputMethodManager imm = (InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+						imm.hideSoftInputFromWindow(_locationAutoCompleteTextView.getWindowToken(), 0);
 					}
 					else {
 						showGpsDialog();
@@ -245,7 +246,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		switch(item.getItemId()) {
 		case(R.id.action_about):
 			showAbout();
-		return true;
+			return true;
 		}
 
 		return false;
@@ -511,9 +512,14 @@ public class MainActivity<ViewGroup> extends Activity {
 				}
 			}
 		}
+		// Convert coordinates to address
 		try {
-			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 1);
-			Log.d(TAG, "returnedAddress: " + returnedAddress.size());
+			List<Address> returnedAddress = _geocoder.getFromLocation(_currentLat, _currentLong, 5);
+			for(Address addr : returnedAddress) {
+				Log.d(TAG, "returnedAddress: " + addr.getAddressLine(0) + ", "
+						+ addr.getAddressLine(1) + ", "
+						+ addr.getAddressLine(2));
+			}
 			Address currentAddress = returnedAddress.get(0);
 			_locationAutoCompleteTextView.setText(currentAddress.getAddressLine(0) + ", "
 					+ currentAddress.getAddressLine(1) + ", "

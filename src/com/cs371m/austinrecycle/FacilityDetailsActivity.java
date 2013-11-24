@@ -15,6 +15,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -162,5 +164,26 @@ public class FacilityDetailsActivity extends FragmentActivity {
 				FacilityDetailsActivity.this.startActivity(googleMaps);
 			}
 		});
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.result_list_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case(R.id.new_search):
+			Intent mainActivity = new Intent(FacilityDetailsActivity.this, MainActivity.class);
+			mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			FacilityDetailsActivity.this.startActivity(mainActivity);
+			FacilityDetailsActivity.this.finish();
+			
+			return true;
+		}
+		return false;
 	}
 }

@@ -76,20 +76,20 @@ public class MainActivity<ViewGroup> extends Activity {
 	private AlertDialog _materialListDialog;
 
 	private PlacesTask _placesTask;
-	private boolean[] oldSelectedItems;
-	private ArrayList<Integer> seletedItems;
+	private boolean[] _oldSelectedItems;
+	private ArrayList<Integer> _seletedItems;
 	/**
 	 * onCreate
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
-		oldSelectedItems = new boolean[_materialNames.length];
+		_oldSelectedItems = new boolean[_materialNames.length];
 		
-		for(int i = 0; i < oldSelectedItems.length; i++)
-			oldSelectedItems[i] = false;
+		for(int i = 0; i < _oldSelectedItems.length; i++)
+			_oldSelectedItems[i] = false;
 		
-		seletedItems = new ArrayList<Integer>();
+		_seletedItems = new ArrayList<Integer>();
 		
 		Log.d("onCreate", "onCreate");
 				
@@ -119,6 +119,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				// Users must select at least ONE material
 				if(_materialEditText.getText().toString().equals("")) {
 					Toast.makeText(MainActivity.this, "Please select at least ONE material", Toast.LENGTH_SHORT).show();
+					_materialEditText.requestFocus();
 				}
 				else if(_locationAutoCompleteTextView.getText().toString().equals("")) {
 					showLocationDialog();
@@ -143,7 +144,7 @@ public class MainActivity<ViewGroup> extends Activity {
 					}
 
 					// Needs to create a new task every time
-					new NetworkRequestTask().execute(selectedMaterialArray);	
+					new NetworkRequestTask().execute(selectedMaterialArray);
 				}
 			}
 		});
@@ -247,9 +248,20 @@ public class MainActivity<ViewGroup> extends Activity {
 		case(R.id.action_about):
 			showAbout();
 			return true;
+		case(R.id.reset):
+			_materialEditText.setText("");
+			_locationAutoCompleteTextView.setText("");
+			_currentLocationCheckBox.setChecked(false);
+			_oldSelectedItems = new boolean[_materialNames.length];
+			return true;
 		}
-
+		
 		return false;
+	}
+
+	static class ViewHolder {
+		public TextView text;
+		public CheckBox checkbox;
 	}
 
 	/**
@@ -258,7 +270,10 @@ public class MainActivity<ViewGroup> extends Activity {
 	private void showAbout() {
 		AlertDialog.Builder aboutDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 		aboutDialogBuilder.setTitle("About Austin Recycling");
-		aboutDialogBuilder.setMessage("Developed by: David, Mike and Alex\n\nAdvised by: Mike Scott\n\nMost location related features are powered by Google.");
+		aboutDialogBuilder.setMessage("Developed by: David, Mike and Alex\n\n" +
+				"Advised by: Mike Scott\n\n" +
+				"Most location related features are powered by Google.\n\n" +
+				"Recycle Drop Off Locations from https://data.austintexas.gov");
 		aboutDialogBuilder.setNeutralButton("Done", new AlertDialog.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -266,14 +281,9 @@ public class MainActivity<ViewGroup> extends Activity {
 			}
 		});
 		aboutDialogBuilder.setNeutralButton("Done", null);
-
+	
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();
-	}
-
-	static class ViewHolder {
-		public TextView text;
-		public CheckBox checkbox;
 	}
 
 	/**
@@ -303,9 +313,6 @@ public class MainActivity<ViewGroup> extends Activity {
 			localSelectedItems[i] = 0;
 		}
 
-		// ArrayList to keep the selected items
-//		final ArrayList<Integer> seletedItems = new ArrayList<Integer>();
-
 		ListAdapter adapter = new ArrayAdapter<MaterialItem>(this, R.layout.checkboxes, R.id.textView1, _materialItemArray){
 			public View getView(final int position, View convertView, android.view.ViewGroup parent) {
 
@@ -318,10 +325,10 @@ public class MainActivity<ViewGroup> extends Activity {
 					viewHolder.text = (TextView) convertView.findViewById(R.id.textView1);
 					viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.checkBox1);
 					convertView.setTag(viewHolder);
-					viewHolder.checkbox.setTag(oldSelectedItems[position]);
+					viewHolder.checkbox.setTag(_oldSelectedItems[position]);
 				} 
 				else {
-					((ViewHolder) convertView.getTag()).checkbox.setTag(oldSelectedItems[position]);
+					((ViewHolder) convertView.getTag()).checkbox.setTag(_oldSelectedItems[position]);
 				}
 
 				viewHolder = (ViewHolder) convertView.getTag();
@@ -340,7 +347,7 @@ public class MainActivity<ViewGroup> extends Activity {
 
 				//Ensure no other setOnCheckedChangeListener is attached before you manually change its state.
 				viewHolder.checkbox.setOnCheckedChangeListener(null);
-				if(oldSelectedItems[position]) viewHolder.checkbox.setChecked(true);
+				if(_oldSelectedItems[position]) viewHolder.checkbox.setChecked(true);
 				else viewHolder.checkbox.setChecked(false);
 
 				viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -348,17 +355,13 @@ public class MainActivity<ViewGroup> extends Activity {
 						if (isChecked) {
 							// If the user checked the item, add it to the selected items
 							Log.d("true","true");
-							seletedItems.add(position);
-    						// selectedItems[position] = true;
-//							oldSelectedItems[position] = true;
+							_seletedItems.add(position);
 							localSelectedItems[position] = 2;
 						} 
-						else if (seletedItems.contains(position)) {
+						else if (_seletedItems.contains(position)) {
 							Log.d("false","false");
 							// Else, if the item is already in the array, remove it
-							seletedItems.remove(Integer.valueOf(position));
-							// selectedItems[position] = false;
-//							oldSelectedItems[position] = false;
+							_seletedItems.remove(Integer.valueOf(position));
 							localSelectedItems[position] = 1;
 						}
 					}
@@ -378,10 +381,10 @@ public class MainActivity<ViewGroup> extends Activity {
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
 					if(localSelectedItems[i] == 2)
-						oldSelectedItems[i] = true;
+						_oldSelectedItems[i] = true;
 					else if(localSelectedItems[i] == 1)
-						oldSelectedItems[i] = false;
-					if(oldSelectedItems[i])
+						_oldSelectedItems[i] = false;
+					if(_oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}
 				_materialEditText.setText(oldString);
@@ -395,7 +398,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				String oldString = "";
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
-					if(oldSelectedItems[i])
+					if(_oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}
 				_materialEditText.setText(oldString);
@@ -442,24 +445,34 @@ public class MainActivity<ViewGroup> extends Activity {
 			_locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 15000, 10, new LocationListener() {						
 				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {
-					// TODO Auto-generated method stub
+					Log.d(TAG, "begin onStatusChanged");
+					Log.d(TAG, "provider: " + provider);
+					Log.d(TAG, "status: " + status);
+					Log.d(TAG, "extras: " + extras.describeContents());
+					Log.d(TAG, "end onStatusChanged");
 				}
 
 				@Override
 				public void onProviderEnabled(String provider) {
-					// TODO Auto-generated method stub
+					Log.d(TAG, "begin onProviderEnabled");
+					Log.d(TAG, "provider: " + provider);
+					Log.d(TAG, "end onProviderEnabled");
 				}
 
 				@Override
 				public void onProviderDisabled(String provider) {
-					// TODO Auto-generated method stub
-
+					Log.d(TAG, "begin onProviderDisabled");
+					Log.d(TAG, "provider: " + provider);
+					Log.d(TAG, "end onProviderDisabled");
 				}
 
 				@Override
 				public void onLocationChanged(Location location) {
-					// TODO Auto-generated method stub
-
+					Log.d(TAG, "begin onLocationChanged");
+					Log.d(TAG, "provider: " + location.describeContents());
+					_currentLat = location.getLatitude();
+					_currentLong = location.getLongitude();
+					Log.d(TAG, "end onLocationChanged");
 				}
 			});
 
@@ -476,29 +489,36 @@ public class MainActivity<ViewGroup> extends Activity {
 		if (checkGpsStatus()) {
 			if (location == null) {
 				_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
-
 					@Override
 					public void onStatusChanged(String provider, int status, Bundle extras) {
-						// TODO Auto-generated method stub
-
+						Log.d(TAG, "begin onStatusChanged");
+						Log.d(TAG, "provider: " + provider);
+						Log.d(TAG, "status: " + status);
+						Log.d(TAG, "extras: " + extras.describeContents());
+						Log.d(TAG, "end onStatusChanged");
 					}
 
 					@Override
 					public void onProviderEnabled(String provider) {
-						// TODO Auto-generated method stub
-
+						Log.d(TAG, "begin onProviderEnabled");
+						Log.d(TAG, "provider: " + provider);
+						Log.d(TAG, "end onProviderEnabled");
 					}
 
 					@Override
 					public void onProviderDisabled(String provider) {
-						// TODO Auto-generated method stub
-
+						Log.d(TAG, "begin onProviderDisabled");
+						Log.d(TAG, "provider: " + provider);
+						Log.d(TAG, "end onProviderDisabled");
 					}
 
 					@Override
 					public void onLocationChanged(Location location) {
-						// TODO Auto-generated method stub
-
+						Log.d(TAG, "begin onLocationChanged");
+						Log.d(TAG, "provider: " + location.describeContents());
+						_currentLat = location.getLatitude();
+						_currentLong = location.getLongitude();
+						Log.d(TAG, "end onLocationChanged");
 					}
 				});
 
@@ -566,10 +586,12 @@ public class MainActivity<ViewGroup> extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				if(checkGpsStatus()) {
 					MainActivity.this.getCurrentLocation();
+					_currentLocationCheckBox.setChecked(true);
 				}
 				else {
 					dialog.dismiss();
 					showGpsDialog();
+					_currentLocationCheckBox.setChecked(false);
 				}
 			}
 		});

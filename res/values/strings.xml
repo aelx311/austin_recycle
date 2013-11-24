@@ -21,5 +21,7 @@
     <string name="accepts">This facility also accepts:</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="current_location">Use current location</string>
+    <string name="new_search">Start new search</string>
+    <string name="reset">Reset</string>
 
 </resources>

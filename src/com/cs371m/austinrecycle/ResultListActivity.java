@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -48,5 +50,26 @@ public class ResultListActivity extends ListActivity {
 				Log.d(TAG, "Clicked position: " + position);
 			}
 		});
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.result_list_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case(R.id.new_search):
+			Intent mainActivity = new Intent(ResultListActivity.this, MainActivity.class);
+			mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			ResultListActivity.this.startActivity(mainActivity);
+			ResultListActivity.this.finish();
+			
+			return true;
+		}
+		return false;
 	}
 }

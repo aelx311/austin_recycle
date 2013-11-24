@@ -2,6 +2,7 @@ package com.cs371m.austinrecycle;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +25,10 @@ public class ResultListActivity extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		ActionBar actionBar = this.getActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    
 		_listView = this.getListView();
 		_facilityItem = this.getIntent().getParcelableArrayListExtra("RETURNED_RESULT");
 		Log.d(TAG, "size: " + _facilityItem.size());
@@ -62,14 +67,21 @@ public class ResultListActivity extends ListActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
+		case(android.R.id.home):
+			ResultListActivity.this.finish();
+			return true;
 		case(R.id.new_search):
 			Intent mainActivity = new Intent(ResultListActivity.this, MainActivity.class);
 			mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			ResultListActivity.this.startActivity(mainActivity);
 			ResultListActivity.this.finish();
-			
+			ResultListActivity.this.startActivity(mainActivity);
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		ResultListActivity.this.finish();
 	}
 }

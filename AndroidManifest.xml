@@ -58,13 +58,21 @@
         <!-- RESULT LIST ACTIVITY -->
         <activity
             android:name="com.cs371m.austinrecycle.ResultListActivity"
-            android:label="Search Result" >
+            android:label="Search Result"
+            android:parentActivityName="com.cs371m.austinrecycle.MainActivity" >
+           	<meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs371m.austinrecycle.MainActivity" />
         </activity>
 
         <!-- FACILITY DETAIL ACTIVITY -->
         <activity
             android:name="com.cs371m.austinrecycle.FacilityDetailsActivity"
-            android:label="Facility Details" >
+            android:label="Facility Details"
+            android:parentActivityName="com.cs371m.austinrecycle.ResultListActivity" >
+           	<meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.cs371m.austinrecycle.ResultListActivity" />
         </activity>
 
         <meta-data

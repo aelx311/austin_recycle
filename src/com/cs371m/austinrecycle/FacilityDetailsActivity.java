@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.*;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -50,7 +51,10 @@ public class FacilityDetailsActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.facility_details_activity);
-		 
+		
+		ActionBar actionBar = FacilityDetailsActivity.this.getActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
+	    
 		// Get details of the selected facility from previous activity
 		_facilityItemArray = this.getIntent().getParcelableArrayListExtra("SELECTED_FACILITY");
 		_position = this.getIntent().getIntExtra("SELECTED_POSITION", -1);
@@ -169,21 +173,31 @@ public class FacilityDetailsActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.result_list_menu, menu);
+		getMenuInflater().inflate(R.menu.facility_details_menu, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
+		case(android.R.id.home):
+			FacilityDetailsActivity.this.finish();
+			return true;
 		case(R.id.new_search):
 			Intent mainActivity = new Intent(FacilityDetailsActivity.this, MainActivity.class);
 			mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			FacilityDetailsActivity.this.startActivity(mainActivity);
 			FacilityDetailsActivity.this.finish();
-			
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent mainActivity = new Intent(FacilityDetailsActivity.this, MainActivity.class);
+		mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		FacilityDetailsActivity.this.finish();
+		FacilityDetailsActivity.this.startActivity(mainActivity);
 	}
 }

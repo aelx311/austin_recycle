@@ -23,6 +23,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.Settings;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -83,21 +84,19 @@ public class MainActivity<ViewGroup> extends Activity {
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
-		_oldSelectedItems = new boolean[_materialNames.length];
-		
-		for(int i = 0; i < _oldSelectedItems.length; i++)
-			_oldSelectedItems[i] = false;
-		
-		_seletedItems = new ArrayList<Integer>();
-		
-		Log.d("onCreate", "onCreate");
-				
+		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+	    
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this, Locale.getDefault());
+		
+		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+		_oldSelectedItems = new boolean[_materialNames.length];
+		for(int i = 0; i < _oldSelectedItems.length; i++) {
+			_oldSelectedItems[i] = false;
+		}
+		_seletedItems = new ArrayList<Integer>();
 
 		// Setup _materialEditText to show MaterialDialog when clicked
 		_materialEditText = (EditText) MainActivity.this.findViewById(R.id.materials_editText);
@@ -105,7 +104,6 @@ public class MainActivity<ViewGroup> extends Activity {
 		_materialEditText.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-//				_materialEditText.setText("");
 				_materialItemArray.clear();
 				showMaterialDialog();
 			}
@@ -296,8 +294,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this)
 		.setTitle("Please select materials");
 
-		//
-		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+//		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
 		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {

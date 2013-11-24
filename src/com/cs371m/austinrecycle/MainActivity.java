@@ -353,17 +353,18 @@ public class MainActivity<ViewGroup> extends Activity {
 							// If the user checked the item, add it to the selected items
 							Log.d("true","true");
 							_seletedItems.add(position);
+							_oldSelectedItems[position] = true;
 							localSelectedItems[position] = 2;
 						} 
 						else if (_seletedItems.contains(position)) {
 							Log.d("false","false");
 							// Else, if the item is already in the array, remove it
 							_seletedItems.remove(Integer.valueOf(position));
+							_oldSelectedItems[position] = false;
 							localSelectedItems[position] = 1;
 						}
 					}
 				});
-				
 				return convertView;
 			}
 		};
@@ -377,10 +378,10 @@ public class MainActivity<ViewGroup> extends Activity {
 				String oldString = "";
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
-					if(localSelectedItems[i] == 2)
-						_oldSelectedItems[i] = true;
-					else if(localSelectedItems[i] == 1)
-						_oldSelectedItems[i] = false;
+//					if(localSelectedItems[i] == 2)
+//						_oldSelectedItems[i] = true;
+//					else if(localSelectedItems[i] == 1)
+//						_oldSelectedItems[i] = false;
 					if(_oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}
@@ -395,6 +396,10 @@ public class MainActivity<ViewGroup> extends Activity {
 				String oldString = "";
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
+					if(localSelectedItems[i] == 2)
+						_oldSelectedItems[i] = false;
+					if(localSelectedItems[i] == 1)
+						_oldSelectedItems[i] = true;
 					if(_oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}

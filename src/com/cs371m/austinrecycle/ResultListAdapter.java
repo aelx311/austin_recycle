@@ -28,6 +28,7 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 	// Goal: Reduce calls to findViewById()
 	static class ViewHolder {
 		public TextView _facility_name;
+		public TextView _facility_dist;
 		public TextView _facility_address;
 		public ImageView _icon;
 	}
@@ -69,6 +70,7 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 			
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder._facility_name = (TextView) rowView.findViewById(R.id.facility_name);
+			viewHolder._facility_dist = (TextView) rowView.findViewById(R.id.facility_dist);
 			viewHolder._facility_address = (TextView) rowView.findViewById(R.id.facility_address);
 			rowView.setTag(viewHolder);
 		}
@@ -89,7 +91,11 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 
 			String textToDisplay = addr + ", " + city + ", " + state + ", " + zip + ".";
 			
-			holder._facility_name.setText((position+1) + ". " + _data.getName());
+			holder._facility_name.setText((position+1) + ". " + _data.getName().trim());
+			
+			float dist_miles = (float)_data.getDistance()/(float)1609.34;
+			String miles = String.format("%.1f", dist_miles);
+			holder._facility_dist.setText(miles + " mi");
 			holder._facility_address.setText(textToDisplay);
 		}
 		catch (JSONException e) {

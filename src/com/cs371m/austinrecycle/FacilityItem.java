@@ -17,6 +17,7 @@ public class FacilityItem implements Parcelable{
 	private String _addr_human; // Human Readable Address
 	private String _phone_num;
 	private ArrayList<String> _accepts;
+	private int _distance;		// The distance to the user (in meters)
 	
 	public FacilityItem(String name, String addr_lat, String addr_long, String addr_human, String phone_num, ArrayList<String> accepts) {
 		_name = name;
@@ -25,6 +26,7 @@ public class FacilityItem implements Parcelable{
 		_addr_human = addr_human;
 		_phone_num = phone_num;
 		_accepts = accepts;
+		_distance = 0; // Will be set dynamically by Model.calculateDistances()
 	}
 	
 	public String getName()
@@ -56,6 +58,16 @@ public class FacilityItem implements Parcelable{
 		return _accepts;
 	}
 	
+	public int getDistance()
+	{
+		return _distance;
+	}
+	
+	public void setDistance(int distance)
+	{
+		_distance = distance;
+	}
+	
 	/**
 	 * In order to pass objects between activities, the objects have to be Parcelable
 	 * Parceling part
@@ -68,6 +80,7 @@ public class FacilityItem implements Parcelable{
 		this._addr_human = in.readString();
 		this._phone_num = in.readString();
 		this._accepts = (ArrayList<String>) in.readSerializable();
+		this._distance = in.readInt();
 	}
 	
 	@Override
@@ -83,6 +96,7 @@ public class FacilityItem implements Parcelable{
 		dest.writeString(_addr_human);
 		dest.writeString(_phone_num);
 		dest.writeSerializable(_accepts);
+		dest.writeInt(_distance);
 	}
 	
 	public static final Parcelable.Creator<FacilityItem> CREATOR = new Parcelable.Creator<FacilityItem>() {

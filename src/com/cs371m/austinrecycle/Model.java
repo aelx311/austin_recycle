@@ -42,18 +42,6 @@ public class Model {
         	// Initialize connection object
             URL url = new URL(url_string);
             _conn = (HttpURLConnection) url.openConnection();
-//            try
-//            {
-//                _conn.setReadTimeout(10000);
-//                _conn.setConnectTimeout(15000);
-//                _conn.setRequestMethod("GET");
-//                _conn.setDoInput(true);         // Yes we can receive responses
-//                _conn.setDoOutput(true);        // Yes we can send requests
-//            }
-//            catch (Exception e)
-//            {
-//                Log.e(TAG, "Error initializing connection", e);
-//            }
             InputStream in = new BufferedInputStream(_conn.getInputStream());
             
             return convertStreamToString(in);
@@ -121,6 +109,7 @@ public class Model {
         }
 
         // Sort facilities by distance from the user
+        calculateDistances(facilities);
         Collections.sort(facilities, new FacilityComparator());
         
         return facilities;
@@ -136,23 +125,65 @@ public class Model {
     }
     
     /**
+     * Calculate the distance between the user's location and each facility
+     * in the given facilities ArrayList and record it into each component 
+     * FacilityItem.
+     */
+    private void calculateDistances(ArrayList<FacilityItem> facilities) {
+    	Log.d(TAG, "Entering caculateDistances");
+    	
+    	// Formulate the request string for the Google Distance Matrix web API
+    	String request_url = "http://maps.googleapis.com/maps/api/distancematrix/json?";
+    	request_url += "origins=" + _user_lat + "," + _user_long;
+    	request_url += "&destinations=";
+    	int size = facilities.size();
+    	for(int i = 0; i < size; ++i) {
+    		request_url += facilities.get(i).getAddrLat() + "," + facilities.get(i).getAddrLong();
+    		request_url += (i != size - 1) ? "|" : "";
+    	}
+    	request_url += "&sensor=false&units=imperial";
+    	//Log.d(TAG, "request_url: " + request_url);
+    	
+    	
+    	// Make the request over the network and get the response
+        String response = getResponse(request_url);
+        //Log.d(TAG, "response: " + response);
+        
+        // Parse result and write the distance into each FacilityItem
+        try {
+        	// Drill down into JSON
+            JSONObject resp_obj = new JSONObject(response);
+            JSONArray rows = resp_obj.getJSONArray("rows");
+            JSONObject row0 = rows.getJSONObject(0);
+            JSONArray elements = row0.getJSONArray("elements");
+            
+            // Assemble an array of distances that mirrors the facilities array
+            for(int i = 0; i < elements.length(); ++i) {
+            	JSONObject element = elements.getJSONObject(i);
+            	JSONObject distance = element.getJSONObject("distance");
+            	int feet = distance.getInt("value");
+            	facilities.get(i).setDistance(feet);
+            }
+        }
+        catch (JSONException e) {
+            Log.e(TAG, "Error parsing distance response", e);
+        }
+        
+        for (int i = 0; i < facilities.size(); ++i) {
+        	Log.d(TAG, facilities.get(i).getName() + ": " + facilities.get(i).getDistance() + " feet.");
+        }
+        
+    	Log.d(TAG, "Exiting caculateDistances");
+    }
+    
+    /**
      * Sorts two FacilityItems based on distance from user's location
      */
     private class FacilityComparator implements Comparator<FacilityItem> {
     	public int compare(FacilityItem item1, FacilityItem item2) {
-    		Double lat1 = Double.valueOf(item1.getAddrLat());
-    		Double long1 = Double.valueOf(item1.getAddrLong());
-    		Double lat2 = Double.valueOf(item2.getAddrLat());
-    		Double long2 = Double.valueOf(item2.getAddrLong());
+    		int dist1 = item1.getDistance();
+    		int dist2 = item2.getDistance();
     		
-    		// Calculate relative distance by treating lat and long as if they
-    		// were just an x and y axis
-    		Double dist1 = Math.sqrt(Math.pow(lat1 - _user_lat, 2) + 
-    								 Math.pow(long1 - _user_long, 2));
-    		Double dist2 = Math.sqrt(Math.pow(lat2 - _user_lat, 2) + 
-					 				 Math.pow(long2 - _user_long, 2));
-    		
-    		// Compare and return comparator relation
     		if(dist1 == dist2) return 0;
     		else if(dist1 < dist2) return -1;
     		else return 1;

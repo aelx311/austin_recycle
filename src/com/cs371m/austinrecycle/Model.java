@@ -28,21 +28,7 @@ public class Model {
     	// Save user location
     	_user_lat = user_lat;
     	_user_long = user_long;
-    	
-    	// Initialize connection object
-        try
-        {
-            _conn.setReadTimeout(10000);
-            _conn.setConnectTimeout(15000);
-            _conn.setRequestMethod("GET");
-            _conn.setDoInput(true);         // Yes we can receive responses
-            _conn.setDoOutput(true);        // Yes we can send requests
-        }
-        catch (Exception e)
-        {
-        	
-            Log.e(TAG, "Error initializing connection", e);
-        }
+    	Log.d(TAG, "Model user location initialized to {" + _user_lat + ", " + _user_long + "}");
     }
     
     /**
@@ -53,8 +39,21 @@ public class Model {
     {
         try
         {
+        	// Initialize connection object
             URL url = new URL(url_string);
             _conn = (HttpURLConnection) url.openConnection();
+//            try
+//            {
+//                _conn.setReadTimeout(10000);
+//                _conn.setConnectTimeout(15000);
+//                _conn.setRequestMethod("GET");
+//                _conn.setDoInput(true);         // Yes we can receive responses
+//                _conn.setDoOutput(true);        // Yes we can send requests
+//            }
+//            catch (Exception e)
+//            {
+//                Log.e(TAG, "Error initializing connection", e);
+//            }
             InputStream in = new BufferedInputStream(_conn.getInputStream());
             
             return convertStreamToString(in);

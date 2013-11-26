@@ -130,8 +130,6 @@ public class Model {
      * FacilityItem.
      */
     private void calculateDistances(ArrayList<FacilityItem> facilities) {
-    	Log.d(TAG, "Entering caculateDistances");
-    	
     	// Formulate the request string for the Google Distance Matrix web API
     	String request_url = "http://maps.googleapis.com/maps/api/distancematrix/json?";
     	request_url += "origins=" + _user_lat + "," + _user_long;
@@ -144,10 +142,9 @@ public class Model {
     	request_url += "&sensor=false&units=imperial";
     	//Log.d(TAG, "request_url: " + request_url);
     	
-    	
     	// Make the request over the network and get the response
         String response = getResponse(request_url);
-        Log.d(TAG, "response: " + response);
+        //Log.d(TAG, "response: " + response);
         
         // Parse result and write the distance into each FacilityItem
         try {
@@ -169,10 +166,11 @@ public class Model {
             Log.e(TAG, "Error parsing distance response", e);
         }
         
+        /*
         for (int i = 0; i < facilities.size(); ++i) {
         	Log.d(TAG, facilities.get(i).getName() + ": " + facilities.get(i).getDistance() + " meters.");
         }
-    	Log.d(TAG, "Exiting caculateDistances");
+        */
     }
     
     /**

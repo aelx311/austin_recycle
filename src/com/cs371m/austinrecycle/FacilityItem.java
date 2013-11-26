@@ -17,7 +17,7 @@ public class FacilityItem implements Parcelable{
 	private String _addr_human; // Human Readable Address
 	private String _phone_num;
 	private ArrayList<String> _accepts;
-	private int _distance;		// The distance to the user (in feet)
+	private int _distance;		// The distance to the user (in meters)
 	
 	public FacilityItem(String name, String addr_lat, String addr_long, String addr_human, String phone_num, ArrayList<String> accepts) {
 		_name = name;

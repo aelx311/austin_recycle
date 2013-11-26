@@ -147,7 +147,7 @@ public class Model {
     	
     	// Make the request over the network and get the response
         String response = getResponse(request_url);
-        //Log.d(TAG, "response: " + response);
+        Log.d(TAG, "response: " + response);
         
         // Parse result and write the distance into each FacilityItem
         try {
@@ -161,8 +161,8 @@ public class Model {
             for(int i = 0; i < elements.length(); ++i) {
             	JSONObject element = elements.getJSONObject(i);
             	JSONObject distance = element.getJSONObject("distance");
-            	int feet = distance.getInt("value");
-            	facilities.get(i).setDistance(feet);
+            	int meters = distance.getInt("value");
+            	facilities.get(i).setDistance(meters);
             }
         }
         catch (JSONException e) {
@@ -170,9 +170,8 @@ public class Model {
         }
         
         for (int i = 0; i < facilities.size(); ++i) {
-        	Log.d(TAG, facilities.get(i).getName() + ": " + facilities.get(i).getDistance() + " feet.");
+        	Log.d(TAG, facilities.get(i).getName() + ": " + facilities.get(i).getDistance() + " meters.");
         }
-        
     	Log.d(TAG, "Exiting caculateDistances");
     }
     

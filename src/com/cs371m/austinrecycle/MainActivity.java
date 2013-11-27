@@ -14,16 +14,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Parcelable;
-import android.provider.Settings;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -34,6 +24,15 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,6 +41,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -110,7 +112,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		});
 
 		// Setup actions when the search button is clicked
-		_searchButton = (ImageButton) MainActivity.this.findViewById(R.id.search_button);
+		_searchButton = (ImageButton) MainActivity.this.findViewById(R.id.search_button);		
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -186,6 +188,7 @@ public class MainActivity<ViewGroup> extends Activity {
 						MainActivity.this.getCurrentLocation();
 						InputMethodManager imm = (InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
 						imm.hideSoftInputFromWindow(_locationAutoCompleteTextView.getWindowToken(), 0);
+						_placesTask.cancel(true);
 					}
 					else {
 						showGpsDialog();
@@ -655,9 +658,11 @@ public class MainActivity<ViewGroup> extends Activity {
 			Log.d(TAG, "end doInBackground");
 			return m.getFacilities(materials);
 		}
+		
 		@Override
 		protected void onPreExecute() {
-			showProgressDialog();
+//			showProgressDialog();
+			_searchButton.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate));
 		}
 
 		/** 
@@ -667,7 +672,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		@Override
 		protected void onPostExecute(ArrayList<FacilityItem> facilities) {
 			Log.d(TAG, "begin onPostExecute");
-			_progressDialog.dismiss();
+//			_progressDialog.dismiss();
 			// Start the ResultListActivity
 			Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
 			resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);

@@ -31,6 +31,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -77,6 +78,7 @@ public class MainActivity<ViewGroup> extends Activity {
 	private AlertDialog _materialListDialog;
 
 	private PlacesTask _placesTask;
+	
 	private boolean[] _oldSelectedItems;
 	private ArrayList<Integer> _seletedItems;
 	/**
@@ -97,6 +99,11 @@ public class MainActivity<ViewGroup> extends Activity {
 			_oldSelectedItems[i] = false;
 		}
 		_seletedItems = new ArrayList<Integer>();
+		
+		if(savedInstanceState != null){		
+			_oldSelectedItems = savedInstanceState.getBooleanArray("_oldSelectedItems");
+			_seletedItems = savedInstanceState.getIntegerArrayList("_seletedItems");
+		}
 
 		// Setup _materialEditText to show MaterialDialog when clicked
 		_materialEditText = (EditText) MainActivity.this.findViewById(R.id.materials_editText);
@@ -198,7 +205,19 @@ public class MainActivity<ViewGroup> extends Activity {
 			}
 		});
 	}
-
+	
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBooleanArray("_oldSelectedItems", _oldSelectedItems);
+		outState.putIntegerArrayList("_seletedItems", _seletedItems);
+	}
+	
+//	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//		super.onRestoreInstanceState(savedInstanceState);
+//		_oldSelectedItems = savedInstanceState.getBooleanArray("_oldSelectedItems");
+//		_seletedItems = savedInstanceState.getIntegerArrayList("_seletedItems");
+//	}
+	
 	/**
 	 * onResume() is called after onCreate()
 	 */
@@ -378,10 +397,6 @@ public class MainActivity<ViewGroup> extends Activity {
 				String oldString = "";
 				for(int i=0; i<_materialNames.length; ++i) {
 					String clickedMaterial = items[i].toString();
-//					if(localSelectedItems[i] == 2)
-//						_oldSelectedItems[i] = true;
-//					else if(localSelectedItems[i] == 1)
-//						_oldSelectedItems[i] = false;
 					if(_oldSelectedItems[i])
 						oldString = oldString.equals("") ? clickedMaterial : oldString + ", " + clickedMaterial;
 				}

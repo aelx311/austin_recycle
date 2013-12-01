@@ -1,0 +1,82 @@
+Team Members
+=============
+David Ouyang Moench (dom289)
+Chan-Tang Hsu (hc9757)
+Alex Ng Dehe (an8645)
+
+Instructions
+============
+1. Select material(s) that you want to recycle.
+2. Enter your current location. This may be done manually or by selecting "Use 
+   current location. The latter will use your device's GPS service.
+3. Click the Go button at the bottom to search for locations.
+4. A list of facilities will show up sorted according to the distance from the 
+   entered address.
+5. Selecting one of the facilities will bring you to that facility's details 
+   page.
+
+Completed Features From the Prototype Deliverable List
+======================================================
+1. Material selection implements checkboxes that save state. In the alpha 
+   release every material selection had to start from scratch.
+2. "Use Current Location" checkbox on Seach Activity to use Location services
+   instead of manually entering an address. In our alpha release this happened 
+   automatically if nothing was typed into the location text field, but users
+   had no way to know it would do that. This makes for a more intuitive UI.
+3. 'Up' navigation button in the top left corner. Allows the user to navigate
+   backwards through the activity chain: Detail Activity -> Result List Activity
+   -> Main Search activity.
+4. Result list of facilities is sorted by distance from the user: In our alpha
+   release this feature was faked by treating a location's (latitude, longitude)
+   tuple as a simple cartesian point and sorting by linear distance between 
+   those points. Now we obtain the actual geographic distances between locations
+   by interacting with the Google Distance Matrix API for more accurate sorting.
+5. Display each facility's distance from the user in the results list.
+6. Show all materials accepted by the facility on the Result List and Detail 
+   Activities.
+7. Show the location of the facility on a map.
+8. Button that can call the facility.
+9. Button that opens up Google Maps for turn by turn navigation.
+
+Incomplete Features From the Prototype Deliverable List
+=======================================================
+None
+
+Features Added Beyond the Prototype Deliverable List
+====================================================
+1. Use GPS data of the device to find current location.
+2. Splash page: Checks the device's wifi and location settings and gracefully
+   prompts the user to take any required actions to run the app.
+3. New Search button. The user can initiate a new search from the Result
+   List Activity or Detail Activity by clicking the '+' icon at the top right.
+
+Complete Features from the Prototype Wish List
+==============================================
+1. Location autocomplete by Google.
+
+Incomplete Features from the Prototype Wish List
+================================================
+1. Austin recycling pickup schedule lookup capability.
+2. Point/Reward system.
+
+Classes and Chunks of Code from Other Sources
+=============================================
+1.	Classes: LocationAutoCompleteAdapter & MainActivity.PlacesTask
+	Source: ("Adding Autocomplete to your Android App", https://developers.google.com/places/training/autocomplete-android)
+
+2. 	Classes: MaterialListAdapter.ViewHolder & ResultListAdapter.ViewHolder
+	Source: ("Android ListView - Tutorial", http://www.vogella.com/articles/AndroidListView/article.html#androidlists_overview)
+
+3.	Class: Parcelable in FacilityItem
+	Source: ("How to properly implement Parcelable with an ArrayList<Parcelable>?", http://stackoverflow.com/questions/7042272/how-to-properly-implement-parcelable-with-an-arraylistparcelable)
+
+
+Classes and Chunks of Code Completed Ourselves
+==============================================
+1. MainActivity
+2. ResultListActivity
+3. FacilityDetailsActivity
+4. SplashScreenActivity
+5. MaterialItem
+6. MaterialListAdapter
+7. ResultListAdapter

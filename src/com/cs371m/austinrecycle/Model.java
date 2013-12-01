@@ -68,7 +68,9 @@ public class Model {
             else url_string += "&" + materials[i] + "=Yes";
         }
         // Make the request over the network and get the response
+        Log.d(TAG, "request: " + url_string);
         String response = getResponse(url_string);
+        //Log.d(TAG, "response: " + response);
         
         // Parse the JSON String response into a JSONArray of JSONObjects
         ArrayList<FacilityItem> facilities = new ArrayList<FacilityItem>();
@@ -107,10 +109,16 @@ public class Model {
         {
             Log.e(TAG, "Error parsing response", e);
         }
+        
+        for(FacilityItem i : facilities)
+        {
+        	Log.d(TAG, i.getName() + ": " + i.getAccepts());
+        }
 
         // Sort facilities by distance from the user
-        calculateDistances(facilities);
+        facilities = calculateDistances(facilities);
         Collections.sort(facilities, new FacilityComparator());
+
         
         return facilities;
     }
@@ -128,19 +136,40 @@ public class Model {
      * Calculate the distance between the user's location and each facility
      * in the given facilities ArrayList and record it into each component 
      * FacilityItem.
+     * 
+     * Note: This method will truncate the facilities list to 50 if it exceeds that limit
      */
-    private void calculateDistances(ArrayList<FacilityItem> facilities) {
+    private ArrayList<FacilityItem> calculateDistances(ArrayList<FacilityItem> facilities) {
     	// Formulate the request string for the Google Distance Matrix web API
     	String request_url = "http://maps.googleapis.com/maps/api/distancematrix/json?";
     	request_url += "origins=" + _user_lat + "," + _user_long;
     	request_url += "&destinations=";
     	int size = facilities.size();
+    	
+    	if(size > 50) 
+    	{
+    		// TODO: This truncation of possible results is because the Google Distance API
+    		// will only handle 50 elements per request. It would be better to make multiple
+    		// requests to keep all our results from the recycling database.
+    		size = 50;
+    		Log.d(TAG, "size: " + size);
+    		
+        	ArrayList<FacilityItem> truncated = new ArrayList<FacilityItem>();
+        	for(int i = 0; i < 50; ++i)
+        	{
+        		truncated.add(facilities.get(i));
+        	}
+        	facilities = truncated;
+        	
+        	Log.d(TAG, "Truncated size: " + facilities.size());
+    	}
+    	
     	for(int i = 0; i < size; ++i) {
     		request_url += facilities.get(i).getAddrLat() + "," + facilities.get(i).getAddrLong();
     		request_url += (i != size - 1) ? "|" : "";
     	}
     	request_url += "&sensor=false&units=imperial";
-    	//Log.d(TAG, "request_url: " + request_url);
+    	Log.d(TAG, "request_url: " + request_url);
     	
     	// Make the request over the network and get the response
         String response = getResponse(request_url);
@@ -166,11 +195,7 @@ public class Model {
             Log.e(TAG, "Error parsing distance response", e);
         }
         
-        /*
-        for (int i = 0; i < facilities.size(); ++i) {
-        	Log.d(TAG, facilities.get(i).getName() + ": " + facilities.get(i).getDistance() + " meters.");
-        }
-        */
+        return facilities;
     }
     
     /**

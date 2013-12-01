@@ -19,7 +19,7 @@ Completed Features From the Prototype Deliverable List
 ======================================================
 1. Material selection implements checkboxes that save state. In the alpha 
    release every material selection had to start from scratch.
-2. "Use Current Location" checkbox on Seach Activity to use Location services
+2. "Use Current Location" checkbox on Search Activity to use Location services
    instead of manually entering an address. In our alpha release this happened 
    automatically if nothing was typed into the location text field, but users
    had no way to know it would do that. This makes for a more intuitive UI.

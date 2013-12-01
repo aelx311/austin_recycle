@@ -30,7 +30,14 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		public TextView _facility_name;
 		public TextView _facility_dist;
 		public TextView _facility_address;
-		public ImageView _icon;
+		public ImageView _oil_icon;
+		public ImageView _oil_filter_icon;
+		public ImageView _fluids_icon;
+		public ImageView _tires_icon;
+		public ImageView _batteries_icon;
+		public ImageView _newspapers_icon;
+		public ImageView _scrap_metal_icon;
+		public ImageView _aluminum_icon;
 	}
 	
 	public ResultListAdapter(Context context, int layoutResourceId, ArrayList<FacilityItem> item) {
@@ -38,23 +45,6 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 		_context = context;
 		_layoutResourceId = layoutResourceId;
 		_item = item;
-		
-		_materialIcons = new HashMap<String, Integer>();
-		_materialIcons.put("oil", R.id.oil_icon);
-		_materialIcons.put("oil_filter", R.id.oil_filter_icon);
-		_materialIcons.put("fluids", R.id.fluids_icon);
-		_materialIcons.put("tires", R.id.tires_icon);
-		_materialIcons.put("batteries", R.id.batteries_icon);
-		_materialIcons.put("newspapers", R.id.newspapers_icon);
-		_materialIcons.put("scrap_metal", R.id.scrap_metal_icon);
-		_materialIcons.put("aluminum", R.id.aluminum_icon);
-		
-		// Make sure the object is passed correctly
-//		Log.d(TAG, "BEGIN PRINTING _facilitiesItem");
-//    	for(FacilityItem x : _item) {
-//    		Log.d(TAG, x.getName());
-//    	}
-//    	Log.d(TAG, "END PRINTING _facilitiesItem");
 	}
 	
 	// Need to override getView to display something more complicated than a TextView
@@ -72,6 +62,14 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 			viewHolder._facility_name = (TextView) rowView.findViewById(R.id.facility_name);
 			viewHolder._facility_dist = (TextView) rowView.findViewById(R.id.facility_dist);
 			viewHolder._facility_address = (TextView) rowView.findViewById(R.id.facility_address);
+			viewHolder._oil_icon = (ImageView) rowView.findViewById(R.id.oil_icon);
+			viewHolder._oil_filter_icon = (ImageView) rowView.findViewById(R.id.oil_filter_icon);
+			viewHolder._fluids_icon = (ImageView) rowView.findViewById(R.id.fluids_icon);
+			viewHolder._tires_icon = (ImageView) rowView.findViewById(R.id.tires_icon);
+			viewHolder._batteries_icon = (ImageView) rowView.findViewById(R.id.batteries_icon);
+			viewHolder._newspapers_icon = (ImageView) rowView.findViewById(R.id.newspapers_icon);
+			viewHolder._scrap_metal_icon = (ImageView) rowView.findViewById(R.id.scrap_metal_icon);
+			viewHolder._aluminum_icon = (ImageView) rowView.findViewById(R.id.aluminum_icon);
 			rowView.setTag(viewHolder);
 		}
 		
@@ -102,15 +100,52 @@ public class ResultListAdapter extends ArrayAdapter<FacilityItem> {
 			e.printStackTrace();
 		}
 		
-		// Add appropriate material ImageViews to this facility's view
+		Log.d(TAG, _data.getName());
+		Log.d(TAG, _data.getAccepts()+"");
+		
+		holder._oil_icon.setVisibility(View.GONE);
+		holder._oil_filter_icon.setVisibility(View.GONE);
+		holder._fluids_icon.setVisibility(View.GONE);
+		holder._tires_icon.setVisibility(View.GONE);
+		holder._batteries_icon.setVisibility(View.GONE);
+		holder._newspapers_icon.setVisibility(View.GONE);
+		holder._scrap_metal_icon.setVisibility(View.GONE);
+		holder._aluminum_icon.setVisibility(View.GONE);
+		
 		for(String iconKey : accepts) {
-			int iconId = _materialIcons.get(iconKey);
-			if(_materialIcons.containsKey(iconKey)) {
-				holder._icon = (ImageView) rowView.findViewById(iconId);
-				holder._icon.setVisibility(View.VISIBLE);
+			Log.d(TAG, iconKey);
+			if(iconKey.equals("oil")) {
+				holder._oil_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("oil_filter")) {
+				holder._oil_filter_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("fluids")) {
+				holder._fluids_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("tires")) {
+				holder._tires_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("batteries")) {
+				holder._batteries_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("newspapers")) {
+				holder._newspapers_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("scrap_metal")) {
+				holder._scrap_metal_icon.setVisibility(View.VISIBLE);
+			}
+			
+			if(iconKey.equals("aluminum")) {
+				holder._aluminum_icon.setVisibility(View.VISIBLE);
 			}
 		}
-		
 		return rowView;
 	}
 }

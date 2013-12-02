@@ -75,12 +75,12 @@ public class MainActivity<ViewGroup> extends Activity {
 	private AlertDialog _materialListDialog;
 
 	private PlacesTask _placesTask;
-	
+
 	private boolean[] _oldSelectedItems;
 	private ArrayList<Integer> _seletedItems;
-	
+
 	private boolean _isSearching;
-	
+
 	/**
 	 * onCreate
 	 */
@@ -89,7 +89,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		Log.d(TAG, "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-	    
+
 		// Initialization
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this, Locale.getDefault());
@@ -100,7 +100,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		}
 		_seletedItems = new ArrayList<Integer>();
 		_isSearching = false;
-		
+
 		if(savedInstanceState != null) {
 			_oldSelectedItems = savedInstanceState.getBooleanArray("_oldSelectedItems");
 			_seletedItems = savedInstanceState.getIntegerArrayList("_seletedItems");
@@ -219,13 +219,13 @@ public class MainActivity<ViewGroup> extends Activity {
 			Log.e(TAG, "Error getting current location", e);
 		}
 	}
-	
+
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBooleanArray("_oldSelectedItems", _oldSelectedItems);
 		outState.putIntegerArrayList("_seletedItems", _seletedItems);
 	}
-	
+
 	/**
 	 * onResume() is called after onCreate()
 	 */
@@ -270,15 +270,14 @@ public class MainActivity<ViewGroup> extends Activity {
 		switch(item.getItemId()) {
 		case(R.id.action_about):
 			showAbout();
-			return true;
+		return true;
 		case(R.id.reset):
 			_materialEditText.setText("");
-			_locationAutoCompleteTextView.setText("");
-			_currentLocationCheckBox.setChecked(false);
-			_oldSelectedItems = new boolean[_materialNames.length];
-			return true;
+		_locationAutoCompleteTextView.setText("");
+		_currentLocationCheckBox.setChecked(false);
+		_oldSelectedItems = new boolean[_materialNames.length];
+		return true;
 		}
-		
 		return false;
 	}
 
@@ -303,7 +302,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				dialog.dismiss();
 			}
 		});
-	
+
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();
 	}
@@ -317,9 +316,9 @@ public class MainActivity<ViewGroup> extends Activity {
 
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this)
 		.setTitle("Please select materials");
-		
+
 		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
-		
+
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
 			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i]));
@@ -392,7 +391,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				return convertView;
 			}
 		};
-		
+
 		materialDialogBuilder.setAdapter(adapter, null);
 
 		// Set action for OK buttons
@@ -409,7 +408,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				dialog.dismiss();
 			}
 		});
-		
+
 		// Set action for Cancel buttons
 		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override
@@ -441,10 +440,10 @@ public class MainActivity<ViewGroup> extends Activity {
 	private boolean checkGpsStatus() {
 		ContentResolver contentResolver = MainActivity.this.getBaseContext().getContentResolver();
 		boolean gpsStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER);
-		
+
 		return gpsStatus;
 	}
-	
+
 	/**
 	 * Check mobile status
 	 * @return true if mobile is on
@@ -453,7 +452,7 @@ public class MainActivity<ViewGroup> extends Activity {
 	private boolean checkMobileStatus() {
 		ContentResolver contentResolver = MainActivity.this.getBaseContext().getContentResolver();
 		boolean mobileStatus = Settings.Secure.isLocationProviderEnabled(contentResolver, LocationManager.NETWORK_PROVIDER);
-		
+
 		return mobileStatus;
 	}
 
@@ -508,7 +507,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				}
 			}
 		}
-		
+
 		if (checkGpsStatus()) {
 			if (location == null) {
 				_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 15000, 10, new LocationListener() {
@@ -665,7 +664,7 @@ public class MainActivity<ViewGroup> extends Activity {
 			Log.d(TAG, "end doInBackground");
 			return m.getFacilities(materials);
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
 			_searchButton.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate));

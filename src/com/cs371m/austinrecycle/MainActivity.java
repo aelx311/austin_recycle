@@ -41,9 +41,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.RotateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -112,7 +110,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		});
 
 		// Setup actions when the search button is clicked
-		_searchButton = (ImageButton) MainActivity.this.findViewById(R.id.search_button);		
+		_searchButton = (ImageButton) MainActivity.this.findViewById(R.id.search_button);
 		_searchButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -142,6 +140,7 @@ public class MainActivity<ViewGroup> extends Activity {
 					for(int i = 0; i < selectedMaterialArray.length; ++i) {
 						selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
 					}
+					
 
 					// Needs to create a new task every time
 					new NetworkRequestTask().execute(selectedMaterialArray);
@@ -631,18 +630,6 @@ public class MainActivity<ViewGroup> extends Activity {
 	}
 
 	/**
-	 * Build progress dialog
-	 * Display when searching for facilities
-	 */
-	private void showProgressDialog() {
-		_progressDialog = new ProgressDialog(MainActivity.this);
-		_progressDialog.setTitle("Searching");
-		_progressDialog.setMessage("Searching for locations...");
-		_progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-		_progressDialog.show();
-	}
-
-	/**
 	 * Class to run HTTP network requests in a worker thread. Necessary to
 	 * keep the UI interactive.
 	 * 
@@ -661,8 +648,7 @@ public class MainActivity<ViewGroup> extends Activity {
 		
 		@Override
 		protected void onPreExecute() {
-//			showProgressDialog();
-			_searchButton.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate));
+			_searchButton.startAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.rotate));
 		}
 
 		/** 
@@ -672,7 +658,6 @@ public class MainActivity<ViewGroup> extends Activity {
 		@Override
 		protected void onPostExecute(ArrayList<FacilityItem> facilities) {
 			Log.d(TAG, "begin onPostExecute");
-//			_progressDialog.dismiss();
 			// Start the ResultListActivity
 			Intent resultIntent = new Intent(MainActivity.this, ResultListActivity.class);
 			resultIntent.putParcelableArrayListExtra("RETURNED_RESULT", (ArrayList<? extends Parcelable>) facilities);

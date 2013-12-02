@@ -195,9 +195,6 @@ public class FacilityDetailsActivity extends FragmentActivity {
 	
 	@Override
 	public void onBackPressed() {
-		Intent mainActivity = new Intent(FacilityDetailsActivity.this, MainActivity.class);
-		mainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		FacilityDetailsActivity.this.finish();
-		FacilityDetailsActivity.this.startActivity(mainActivity);
 	}
 }

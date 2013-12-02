@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -73,13 +72,14 @@ public class MainActivity<ViewGroup> extends Activity {
 	private double _currentLong;
 	private LocationManager _locationManager;
 
-	private ProgressDialog _progressDialog;
 	private AlertDialog _materialListDialog;
 
 	private PlacesTask _placesTask;
 	
 	private boolean[] _oldSelectedItems;
 	private ArrayList<Integer> _seletedItems;
+	
+	private boolean _isSearching;
 	
 	/**
 	 * onCreate
@@ -99,8 +99,9 @@ public class MainActivity<ViewGroup> extends Activity {
 			_oldSelectedItems[i] = false;
 		}
 		_seletedItems = new ArrayList<Integer>();
+		_isSearching = false;
 		
-		if(savedInstanceState != null){		
+		if(savedInstanceState != null) {
 			_oldSelectedItems = savedInstanceState.getBooleanArray("_oldSelectedItems");
 			_seletedItems = savedInstanceState.getIntegerArrayList("_seletedItems");
 		}
@@ -130,27 +131,32 @@ public class MainActivity<ViewGroup> extends Activity {
 					showLocationDialog();
 				}
 				else {
-					// Get the latitude and longitude of address entered
-					try {
-						String currentAddress = _locationAutoCompleteTextView.getText().toString();
-						List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
-						_currentLat = returnedAddress.get(0).getLatitude();
-						_currentLong = returnedAddress.get(0).getLongitude();
-					}
-					catch(IOException e) {
-						Log.e(TAG, "Error occured in Geocoder: ", e);
-					}
+					if(_isSearching == false) {
+						// Get the latitude and longitude of address entered
+						try {
+							String currentAddress = _locationAutoCompleteTextView.getText().toString();
+							List<Address> returnedAddress = _geocoder.getFromLocationName(currentAddress, 1);
+							_currentLat = returnedAddress.get(0).getLatitude();
+							_currentLong = returnedAddress.get(0).getLongitude();
+						}
+						catch(IOException e) {
+							Log.e(TAG, "Error occured in Geocoder: ", e);
+						}
 
-					// Convert to String array to pass as parameter
-					String[] selectedMaterialArray = _materialEditText.getText().toString().split(",");
-					// Trim spaces, and format material names to their database attribute names
-					for(int i = 0; i < selectedMaterialArray.length; ++i) {
-						selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
-					}
-					
+						// Convert to String array to pass as parameter
+						String[] selectedMaterialArray = _materialEditText.getText().toString().split(",");
+						// Trim spaces, and format material names to their database attribute names
+						for(int i = 0; i < selectedMaterialArray.length; ++i) {
+							selectedMaterialArray[i] = selectedMaterialArray[i].trim().toLowerCase().replace(' ', '_');;
+						}
 
-					// Needs to create a new task every time
-					new NetworkRequestTask().execute(selectedMaterialArray);
+						// Needs to create a new task every time
+						new NetworkRequestTask().execute(selectedMaterialArray);
+						_isSearching = true;
+					}
+					else {
+						Toast.makeText(MainActivity.this, "Austin Recycling is searching for locations now. Please wait.", Toast.LENGTH_SHORT).show();
+					}
 				}
 			}
 		});
@@ -186,26 +192,32 @@ public class MainActivity<ViewGroup> extends Activity {
 
 		// Setup actions to get current location
 		_currentLocationCheckBox = (CheckBox)this.findViewById(R.id.current_location_checkbox);
-		_currentLocationCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				if(isChecked) {
-					if(checkGpsStatus()) {
-						MainActivity.this.getCurrentLocation();
-						InputMethodManager imm = (InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
-						imm.hideSoftInputFromWindow(_locationAutoCompleteTextView.getWindowToken(), 0);
-						_placesTask.cancel(true);
+		try {
+			_currentLocationCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked) {
+						if(checkGpsStatus()) {
+							MainActivity.this.getCurrentLocation();
+							InputMethodManager imm = (InputMethodManager)MainActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
+							imm.hideSoftInputFromWindow(_locationAutoCompleteTextView.getWindowToken(), 0);
+							_placesTask.cancel(true);
+						}
+						else {
+							showGpsDialog();
+							_currentLocationCheckBox.setChecked(false);
+						}
 					}
 					else {
-						showGpsDialog();
-						_currentLocationCheckBox.setChecked(false);
+						_locationAutoCompleteTextView.setText("");
 					}
 				}
-				else {
-					_locationAutoCompleteTextView.setText("");
-				}
-			}
-		});
+			});
+		}
+		catch(Exception e) {
+			showErrorDialog("Error getting current location.");
+			Log.e(TAG, "Error getting current location", e);
+		}
 	}
 	
 	protected void onSaveInstanceState(Bundle outState) {
@@ -232,12 +244,10 @@ public class MainActivity<ViewGroup> extends Activity {
 		if(_materialListDialog != null) {
 			_materialListDialog.dismiss();
 		}
-		if(_progressDialog != null) {
-			_progressDialog.dismiss();
-		}
 		if(_placesTask == null) {
 			_placesTask = new PlacesTask();
 		}
+		_isSearching = false;
 	}
 
 	/**
@@ -293,7 +303,6 @@ public class MainActivity<ViewGroup> extends Activity {
 				dialog.dismiss();
 			}
 		});
-		aboutDialogBuilder.setNeutralButton("Done", null);
 	
 		AlertDialog aboutDialog = aboutDialogBuilder.create();
 		aboutDialog.show();
@@ -569,6 +578,7 @@ public class MainActivity<ViewGroup> extends Activity {
 	 * show error dialog when exception occurs
 	 */
 	private void showErrorDialog(String errorMessage) {
+		Log.d(TAG, "called");
 		final AlertDialog.Builder errorDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 		errorDialogBuilder.setTitle("Error");
 		errorDialogBuilder.setMessage(errorMessage + "\nPlease try again.");
@@ -719,6 +729,10 @@ public class MainActivity<ViewGroup> extends Activity {
 				Log.e(TAG, "Error processing Places API URL", e);
 			}
 			catch (IOException e) {
+				showErrorDialog("Error connecting to Google.");
+				Log.e(TAG, "Error connecting to Places API", e);
+			}
+			catch(Exception e) {
 				showErrorDialog("Error connecting to Google.");
 				Log.e(TAG, "Error connecting to Places API", e);
 			}

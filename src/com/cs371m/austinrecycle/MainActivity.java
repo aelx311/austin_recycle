@@ -21,7 +21,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
@@ -81,6 +80,7 @@ public class MainActivity<ViewGroup> extends Activity {
 	
 	private boolean[] _oldSelectedItems;
 	private ArrayList<Integer> _seletedItems;
+	
 	/**
 	 * onCreate
 	 */
@@ -90,9 +90,9 @@ public class MainActivity<ViewGroup> extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 	    
+		// Initialization
 		_materialItemArray = new ArrayList<MaterialItem>();
 		_geocoder = new Geocoder(this, Locale.getDefault());
-		
 		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
 		_oldSelectedItems = new boolean[_materialNames.length];
 		for(int i = 0; i < _oldSelectedItems.length; i++) {
@@ -214,12 +214,6 @@ public class MainActivity<ViewGroup> extends Activity {
 		outState.putIntegerArrayList("_seletedItems", _seletedItems);
 	}
 	
-//	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-//		super.onRestoreInstanceState(savedInstanceState);
-//		_oldSelectedItems = savedInstanceState.getBooleanArray("_oldSelectedItems");
-//		_seletedItems = savedInstanceState.getIntegerArrayList("_seletedItems");
-//	}
-	
 	/**
 	 * onResume() is called after onCreate()
 	 */
@@ -314,9 +308,9 @@ public class MainActivity<ViewGroup> extends Activity {
 
 		final AlertDialog.Builder materialDialogBuilder = new AlertDialog.Builder(this)
 		.setTitle("Please select materials");
-
-//		_materialNames = MainActivity.this.getResources().getStringArray(R.array.list_material_name);
+		
 		_icons = MainActivity.this.getResources().obtainTypedArray(R.array.list_material_icon);
+		
 		// Store MaterialItem into ArrayList
 		for(int i=0; i<_materialNames.length; ++i) {
 			_materialItemArray.add(new MaterialItem(_icons.getResourceId(i, 0), _materialNames[i]));
@@ -406,6 +400,7 @@ public class MainActivity<ViewGroup> extends Activity {
 				dialog.dismiss();
 			}
 		});
+		
 		// Set action for Cancel buttons
 		materialDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 			@Override

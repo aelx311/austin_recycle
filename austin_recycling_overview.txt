@@ -37,6 +37,7 @@ Completed Features From the Prototype Deliverable List
 7. Show the location of the facility on a map.
 8. Button that can call the facility.
 9. Button that opens up Google Maps for turn by turn navigation.
+10. Search button rotation to provide feedback to users that the app is searching.
 
 Incomplete Features From the Prototype Deliverable List
 =======================================================
